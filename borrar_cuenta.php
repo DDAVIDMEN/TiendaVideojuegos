@@ -1,20 +1,30 @@
 <?php
-    include("conexion.php");
+include("conexion.php");
 
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $correo = mysqli_real_escape_string($con, $_POST['correo']);
-    $edad = mysqli_real_escape_string($con, $_POST['edad']);
 
-    $query = "INSERT INTO usuarios (nombre,correo,edad) VALUES ('$nombre', '$correo', $edad);";
+// Obtener el ID del usuario de la sesión
+$user_id = $_SESSION['user_id'];
+
+// Consulta para eliminar el usuario
+$query = "DELETE FROM usuarios WHERE id = $user_id";
+
+if (mysqli_query($con, $query)) {
+    // Si la eliminación fue exitosa, cerrar la sesión y redirigir a la página de inicio
+    session_unset();
+    session_destroy();
+} else {
+    // En caso de error, mostrar un mensaje
+    echo "<div class='alert alert-danger'>Error: No se pudo borrar el usuario.</div>";
+}
+// Cerrar la conexión
+mysqli_close($con);
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D&D Games</title>
+    <title>Eliminación de Cuenta</title>
     <!-- Latest compiled and minified CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -24,7 +34,7 @@
 <body>
     <!--Contenedor principal de BS5-->
     <div class="container">
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
             <div class="container text-center">
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -58,31 +68,48 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="about.html">Acerca de</a>
+                        <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
                 </ul>
                 <form class="d-flex">
                     <input class="form-control me-2" type="text" placeholder="Buscar">
                     <button class="btn btn-primary" type="button">Buscar</button>
-                  </form>
+                </form>
+
+                <!-- Mostrar enlaces dependiendo del estado de sesión -->
+                <?php if (!isset($_SESSION['user_id'])): ?>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="registro.php" class="nav-link">Crear cuenta</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="login.php" class="nav-link">Iniciar sesión</a>
+                        </li>
+                    </ul>
+                <?php else: ?>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="carrito.php">
+                                <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="cuenta.php" class="nav-link text-light">Mi cuenta</a>
+                        </li>
+                    </ul>
+                <?php endif; ?>
             </div>
         </nav>
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1 ">D&D Games</h1>
         </div>
         <br>
-        <?php
-            if (!mysqli_query($con,$query)) {
-                die('Error: ' . mysqli_error($con));
-            }
-            echo "<div class= 'alert alert-success alert-dismissible'>
-            <button type='button' class='btn-close' data-bs-dismiss='alert'></button>
-            <strong>Success!</strong> This alert box could indicate a successful or positive action.
-            </div>";
-            mysqli_close($con);
-        ?>
-        <a href="index.html" class="btn btn-primary">Regresar al inicio</a>
+        <div class='mt-4 p-5 text-center'>
+            <h1 class='display-1 '>¡Cuenta Borrada con Éxito!</h1>
+        </div>
     </div>
 
 </body>
 </html>
+

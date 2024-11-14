@@ -1,17 +1,49 @@
 <?php
-    
-    include("conexion.php");
+include("conexion.php");
 
-    //Query
-    $query = "select id, fotos, nombre from productos;";
-    if (mysqli_connect_errno()) {
-        echo "<div class='alert alert-danger'>
-            <strong>Error!</strong>" . mysqli_connect_error() ."
-            </div>";
+$error = "";
+$nombre = $correo = $contra = $naci = $tarjeta = $postal = ""; // Inicializar las variables
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Escapar y almacenar los datos del formulario
+    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
+    $correo = mysqli_real_escape_string($con, $_POST['correo']);
+    $contra = mysqli_real_escape_string($con, $_POST['contra']);
+    $naci = mysqli_real_escape_string($con, $_POST['naci']);
+    $tarjeta = mysqli_real_escape_string($con, $_POST['tarjeta']);
+    $postal = mysqli_real_escape_string($con, $_POST['postal']);
+
+    // Verificar si el correo ya existe en la base de datos
+    $query = "SELECT id FROM usuarios WHERE correo = '$correo'";
+    $result = mysqli_query($con, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        // Si el correo ya existe, establecer el mensaje de error
+        $error = "Ya existe un usuario registrado con este correo. Intente con otro";
+    } else {
+        // Si el correo no existe, insertar los datos del usuario
+        $insert_query = "INSERT INTO usuarios (nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal) 
+                         VALUES ('$nombre', '$correo', '$contra', '$naci', '$tarjeta', '$postal')";
+
+        if (mysqli_query($con, $insert_query)) {
+            // Obtén el ID del usuario recién insertado
+            $user_id = mysqli_insert_id($con);
+
+            // Guarda el ID en la variable de sesión
+            $_SESSION['user_id'] = $user_id;
+
+            // Redirigir a cuenta.php si la inserción fue exitosa
+            header("Location: cuenta.php");
+            exit();
+        } else {
+            // Mostrar un error si ocurre un problema con la inserción
+            $error = "Error al registrar el usuario. Inténtalo nuevamente.";
+        }
     }
 
-    $result = mysqli_query($con, $query);
+    // Cerrar la conexión
     mysqli_close($con);
+}
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +51,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D&D Games</title>
+    <title>Registro</title>
     <!-- Latest compiled and minified CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
@@ -36,7 +68,6 @@
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
-                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown">Categorías</a>
@@ -100,23 +131,43 @@
             <h1 class="display-1">D&D Games</h1>
         </div>
         <br>
-        <h2 class="my-2">Catálogo</h2>
-        <br>
-        <div class="container">
-            <div class="row">
-                <?php
-                    while ($row = mysqli_fetch_array($result)) {
-                        echo '<div class="col-md-3 text-center mb-4">';
-                        echo '<a href="detalles.php?id=' . $row['id'] . '" class="text-decoration-none">';
-                        echo '<img src="data:image/jpeg;base64,' . base64_encode($row['fotos']) . '" alt="' . $row['nombre'] . '" width="100" height="150">';
-                        echo '<h5 class="text-body">' . htmlspecialchars($row['nombre']) . '</h5>';
-                        echo '</a>';
-                        echo '</div>';
-                    }
-                    
-                ?>
+        <h2 class="my-2">Nuevo Usuario</h2>
+
+        <!-- Mostrar el mensaje de error si existe -->
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger text-center"><?php echo $error; ?></div>
+        <?php endif; ?>
+
+        <form action="registro.php" method="post">
+            <div class="mb-3 mt-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre" name="nombre" required value="<?php echo htmlspecialchars($nombre); ?>">
             </div>
-        </div>
+            <div class="mb-3 mt-3">
+                <label for="correo" class="form-label">Correo:</label>
+                <input type="email" class="form-control" id="correo" placeholder="Ingrese su email" name="correo" required value="<?php echo htmlspecialchars($correo); ?>">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="contra" class="form-label">Contraseña:</label>
+                <input type="password" class="form-control" id="contra" placeholder="Crea tu contraseña" name="contra" required value="<?php echo htmlspecialchars($contra); ?>">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="naci" class="form-label">Nacimiento:</label>
+                <input type="date" class="form-control" id="naci" name="naci" required value="<?php echo htmlspecialchars($naci); ?>">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="tarjeta" class="form-label">Tarjeta:</label>
+                <input type="text" class="form-control" id="tarjeta" placeholder="16 dígitos" name="tarjeta" required value="<?php echo htmlspecialchars($tarjeta); ?>">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="postal" class="form-label">Código Postal:</label>
+                <input type="text" class="form-control" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
+            </div>
+            <div class="mb-5 mt-3">
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>
+
