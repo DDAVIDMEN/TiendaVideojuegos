@@ -163,23 +163,38 @@
                 <p><strong>Plataformas Disponibles:</strong></p>
 
                 <!-- Formulario para añadir al carrito -->
-                <form action="carrito.php" method="post">
-                    <div class="btn-group" role="group" aria-label="Plataformas">
-                        <?php foreach ($platforms as $index => $platform): ?>
-                            <input type="radio" class="btn-check" name="platform" id="platform<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
-                            <label class="btn btn-outline-secondary" for="platform<?php echo $index; ?>">
-                                <?php echo htmlspecialchars($platform); ?>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
-                    
-                    <!-- Campos ocultos para enviar id y precio -->
-                    <input type="hidden" name="product_id" value="<?php echo $id; ?>">
-                    <input type="hidden" name="price" value="<?php echo isset($precio_descuento) ? number_format($precio_descuento, 0) : $game['precio']; ?>">
-                    <br>
-                    <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
-                </form>
-
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <form action="ana_carrito.php" method="post">
+                        <div class="btn-group" role="group" aria-label="Plataformas">
+                            <?php foreach ($platforms as $index => $platform): ?>
+                                <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
+                                <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
+                                    <?php echo htmlspecialchars($platform); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <!-- Campos ocultos para enviar id y precio -->
+                        <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
+                        <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? number_format($precio_descuento, 0) : $game['precio']; ?>">
+                        <br>
+                        <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
+                    </form>
+                    <?php else: ?>
+                        <!-- Solo el botón si no hay sesión -->
+                        <form action="detalles.php" method="post">
+                            <div class="btn-group" role="group" aria-label="Plataformas">
+                                <?php foreach ($platforms as $index => $platform): ?>
+                                    <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="" required>
+                                    <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
+                                        <?php echo htmlspecialchars($platform); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <br><br>
+                            <a href="login.php" class="btn btn-primary">Añadir al carrito</a>
+                        </form>
+                    <?php endif; ?>
                 <!-- Sección de Reseñas -->
                 <h2 class="my-4">Reseñas</h2>
                 <?php if (empty($reviews)): ?>

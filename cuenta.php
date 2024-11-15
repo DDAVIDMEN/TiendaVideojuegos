@@ -111,8 +111,12 @@ mysqli_close($con);
         </div>
         <br>
         <div class="container my-2">
-            <h1 class="display-4 my-3 text-center">Bienvenido, <?php echo $nombre; ?></h1>
-            <h3><small><strong>Datos Personales:</strong></small></h3>
+            <h1 class="display-4 my-3 text-center">Bienvenido, <?php echo $nombre; ?></h1> 
+            <h3><small><strong>Datos Personales:</strong></small>
+                <a  href="editar.php">
+                    <img src="editar.jpg" alt="Game Logo" style="height: 30px;" class="rounded-pill">
+                </a>
+            </h3>
             <p><strong>Correo:</strong> <?php echo $correo; ?></p>
             <p><strong>Contraseña:</strong> <?php echo $contra; ?></p>
             <p><strong>Fecha de Nacimiento:</strong> <?php echo $nacimiento; ?></p>

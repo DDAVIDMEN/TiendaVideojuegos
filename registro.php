@@ -130,6 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1">D&D Games</h1>
         </div>
+        <div class="text-center">
+            <p class="mb-0">¿Ya tienes una cuenta?</p>
+            <a href="login.php" class="text-secondary">Inicia sesión</a>
+        </div>
         <br>
         <h2 class="my-2">Nuevo Usuario</h2>
 
@@ -141,11 +145,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="registro.php" method="post">
             <div class="mb-3 mt-3">
                 <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre" name="nombre" required value="<?php echo htmlspecialchars($nombre); ?>">
+                <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre" name="nombre" required value="<?php echo htmlspecialchars($nombre); ?>">
             </div>
             <div class="mb-3 mt-3">
                 <label for="correo" class="form-label">Correo:</label>
-                <input type="email" class="form-control" id="correo" placeholder="Ingrese su email" name="correo" required value="<?php echo htmlspecialchars($correo); ?>">
+                <input type="email" class="form-control" id="correo" placeholder="Ingresa tu correo" name="correo" required value="<?php echo htmlspecialchars($correo); ?>">
             </div>
             <div class="mb-3 mt-3">
                 <label for="contra" class="form-label">Contraseña:</label>
@@ -163,8 +167,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="postal" class="form-label">Código Postal:</label>
                 <input type="text" class="form-control" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
             </div>
-            <div class="mb-5 mt-3">
-                <button type="submit" class="btn btn-primary">Crear</button>
+            <div class="my-3">
+                <button type="submit" class="btn btn-primary w-100">Crear</button>
             </div>
         </form>
     </div>

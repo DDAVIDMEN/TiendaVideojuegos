@@ -1,31 +1,45 @@
 <?php
 include("conexion.php");
 
-// Procesar el formulario solo si se envió
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Escapar los datos de entrada para evitar inyecciones SQL
-    $correo = mysqli_real_escape_string($con, $_POST['correo']);
-    $contra = mysqli_real_escape_string($con, $_POST['contra']);
+$user_id = $_SESSION['user_id'];
 
-    // Consulta para verificar el correo y la contraseña
-    $query = "SELECT id FROM usuarios WHERE correo = '$correo' AND contrasena = '$contra'";
-    $result = mysqli_query($con, $query);
+$query = "SELECT nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal FROM usuarios WHERE id = $user_id";
+$result = mysqli_query($con, $query);
 
-    if (mysqli_num_rows($result) == 1) {
-        // Usuario encontrado, guardar el ID en la sesión
-        $row = mysqli_fetch_assoc($result);
-        $_SESSION['user_id'] = $row['id'];
-        
-        // Redirigir al usuario a su cuenta
-        header("Location: cuenta.php");
-        exit();
+// Comprobar si se encontraron datos para el usuario
+if ($row = mysqli_fetch_assoc($result)) {
+    $nom = htmlspecialchars($row['nombre']);
+    $correo = htmlspecialchars($row['correo']);
+    $contra = htmlspecialchars($row['contrasena']);
+    $naci = htmlspecialchars($row['nacimiento']);
+    $tar = htmlspecialchars($row['tarjeta']);
+    $cod = htmlspecialchars($row['Codigo_Postal']);
+} else {
+    echo "<div class='alert alert-danger'>Error: Usuario no encontrado.</div>";
+    exit();
+}
+
+// Manejar la actualización de datos si el formulario es enviado
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = $_POST['nombre'];
+    $contrasena = $_POST['contrasena'];
+    $nacimiento = $_POST['nacimiento'];
+    $tarjeta = $_POST['tarjeta'];
+    $codigo_postal = $_POST['codigo_postal'];
+
+    // Validación y sanitización de los datos se puede hacer aquí
+
+    $updateQuery = "UPDATE usuarios SET nombre = '$nombre', contrasena = '$contrasena', nacimiento = '$nacimiento', 
+    tarjeta = $tarjeta, codigo_postal = $codigo_postal WHERE id = $user_id;";
+
+    if (mysqli_query($con, $updateQuery)) {
+        // Establecer una variable de éxito para mostrar el mensaje emergente
+        $success = true;
     } else {
-        // Usuario no encontrado, mostrar mensaje de error
-        $error = "Correo y/o contraseña incorrectos.";
+        // Mostrar un error si ocurre un problema con la actualización
+        echo "<div class='alert alert-danger'>Error al actualizar los datos</div>";
+        $success = false;
     }
-
-    // Cerrar la conexión
-    mysqli_close($con);
 }
 ?>
 
@@ -34,13 +48,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión</title>
+    <title>Editar Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Función para mostrar el mensaje de éxito y redirigir
+        function showSuccessMessage() {
+            alert("Los datos se actualizaron correctamente.");
+            setTimeout(function() {
+                window.location.href = "cuenta.php"; // Redirigir a cuenta.php después del mensaje
+            }); 
+        }
+    </script>
 </head>
 <body>
-    <!--Contenedor principal de BS5-->
-    <div class="container">
+    <div class="container mt-5">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
             <div class="container text-center">
                 <ul class="navbar-nav">
@@ -112,30 +134,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1">D&D Games</h1>
         </div>
-        <div class="container mt-5">
-            <h2 class="text-center">Iniciar Sesión</h2>
-            
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger text-center"><?php echo $error; ?></div>
-            <?php endif; ?>
+        <br>
+        <h2 class="my-2">Editar Información de <?php echo $correo; ?></h2>
+        <br>
 
-            <form action="login.php" method="POST" class="mt-4">
-                <div class="mb-3">
-                    <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="correo" name="correo" required>
-                </div>
-                <div class="mb-3">
-                    <label for="contra" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="contra" name="contra" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
-            </form>
-            <div class="text-center mt-3">
-                <p class="mb-0">¿No tienes cuenta?</p>
-                <a href="registro.php" class="text-secondary">Crea una cuenta</a>
+        <!-- Formulario para editar usuario -->
+        <form method="POST" action="editar.php">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $nom; ?>" required>
             </div>
-            
-        </div>
+
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo</label>
+                <input type="email" class="form-control text-secondary" id="correo" name="correo" value="<?php echo $correo; ?>" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input type="text" class="form-control" id="contrasena" name="contrasena" value="<?php echo $contra ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="nacimiento" class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="nacimiento" name="nacimiento" value="<?php echo $naci ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="tarjeta" class="form-label">Número de Tarjeta</label>
+                <input type="text" class="form-control" id="tarjeta" name="tarjeta" value="<?php echo $tar ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="codigo_postal" class="form-label">Código Postal</label>
+                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?php echo $cod ?>" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-4">Actualizar</button>
+        </form>
+
+        <!-- Si la actualización fue exitosa, mostramos el mensaje emergente -->
+        <?php if (isset($success) && $success): ?>
+            <script>
+                showSuccessMessage(); // Llamar a la función para mostrar el mensaje
+            </script>
+        <?php endif; ?>
     </div>
 </body>
 </html>
+

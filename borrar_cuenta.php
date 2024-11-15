@@ -107,6 +107,7 @@ mysqli_close($con);
         <br>
         <div class='mt-4 p-5 text-center'>
             <h1 class='display-1 '>¡Cuenta Borrada con Éxito!</h1>
+            <p>Esperemos vuelvas pronto</p>
         </div>
     </div>
 
