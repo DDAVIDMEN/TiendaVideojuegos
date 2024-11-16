@@ -1,49 +1,30 @@
 <?php
-include("conexion.php");
+    
+    include("conexion.php");
 
-$error = "";
-$nombre = $correo = $contra = $naci = $tarjeta = $postal = ""; // Inicializar las variables
+    $user_id = $_SESSION['user_id'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Escapar y almacenar los datos del formulario
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $correo = mysqli_real_escape_string($con, $_POST['correo']);
-    $contra = mysqli_real_escape_string($con, $_POST['contra']);
-    $naci = mysqli_real_escape_string($con, $_POST['naci']);
-    $tarjeta = mysqli_real_escape_string($con, $_POST['tarjeta']);
-    $postal = mysqli_real_escape_string($con, $_POST['postal']);
-
-    // Verificar si el correo ya existe en la base de datos
-    $query = "SELECT id FROM usuarios WHERE correo = '$correo'";
-    $result = mysqli_query($con, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        // Si el correo ya existe, establecer el mensaje de error
-        $error = "Ya existe un usuario registrado con este correo. Intente con otro";
-    } else {
-        // Si el correo no existe, insertar los datos del usuario
-        $insert_query = "INSERT INTO usuarios (nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal) 
-                         VALUES ('$nombre', '$correo', '$contra', '$naci', '$tarjeta', '$postal')";
-
-        if (mysqli_query($con, $insert_query)) {
-            // Obtén el ID del usuario recién insertado
-            $user_id = mysqli_insert_id($con);
-
-            // Guarda el ID en la variable de sesión
-            $_SESSION['user_id'] = $user_id;
-
-            // Redirigir a cuenta.php si la inserción fue exitosa
-            header("Location: cuenta.php");
-            exit();
-        } else {
-            // Mostrar un error si ocurre un problema con la inserción
-            $error = "Error al registrar el usuario. Inténtalo nuevamente.";
-        }
+    //Query
+    $query = "SELECT pro.id, pro.nombre, ca.precio, ca.plataforma, pro.fotos, ca.cantidad 
+    FROM productos pro 
+    JOIN carrito ca ON ca.producto = pro.id 
+    WHERE ca.usuario = $user_id 
+    GROUP BY pro.id, ca.plataforma 
+    ORDER BY ca.id DESC;";
+    if (mysqli_connect_errno()) {
+        echo "<div class='alert alert-danger'>
+            <strong>Error!</strong>" . mysqli_connect_error() ."
+            </div>";
     }
 
-    // Cerrar la conexión
+    $result = mysqli_query($con, $query);
+    $carrito = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $carrito[] = $row;
+    }
+    mysqli_free_result($result);
+
     mysqli_close($con);
-}
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>D&D Games</title>
     <!-- Latest compiled and minified CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
@@ -68,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
+                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown">Categorías</a>
@@ -130,48 +112,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1">D&D Games</h1>
         </div>
-        <div class="text-center">
-            <p class="mb-0">¿Ya tienes una cuenta?</p>
-            <a href="login.php" class="text-secondary">Inicia sesión</a>
-        </div>
         <br>
-        <h2 class="my-2">Nuevo Usuario</h2>
+        <h2 class="my-2">Carrito</h2>
+        <br>
+        <div class="container">
+            <div class="row">
+                <?php
+                $total = 0; // Inicializa el total
+                $cantproductos = 0;
 
-        <!-- Mostrar el mensaje de error si existe -->
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger text-center"><?php echo $error; ?></div>
-        <?php endif; ?>
+                if (empty($carrito)) {
+                    echo '<p class="text-center">El carrito está vacío</p>';
+                } else {
+                    foreach ($carrito as $car):
+                        $subtotal = $car['precio'] * $car['cantidad']; // Calcula el subtotal del producto
+                        $total += $subtotal; // Suma el subtotal al total general
+                        $cantproductos += $car['cantidad'];
 
-        <form action="registro.php" method="post">
-            <div class="mb-3 mt-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre" name="nombre" required value="<?php echo htmlspecialchars($nombre); ?>">
+                        echo '<div class="col-12 d-flex align-items-center mb-4 border-bottom pb-3">';
+                        echo '    <div class="col-3 text-center">';
+                        echo '        <a href="detalles.php?id=' . $car['id'] . '" class="text-decoration-none">';
+                        echo '            <img src="data:image/jpeg;base64,' . base64_encode($car['fotos']) . '" alt="' . $car['nombre'] . '" width="100" height="150">';
+                        echo '            <h5 class="text-body">' . htmlspecialchars($car['nombre']) . '</h5>';
+                        echo '        </a>';
+                        echo '    </div>';
+                        echo '    <div class="col-9 text-end">';
+                        echo '        <h5 class="text-body">Precio: $' . htmlspecialchars($car['precio']) . '</h5>';
+                        echo '        <h6 class="text-body">Plataforma: ' . htmlspecialchars($car['plataforma']) . '</h6>';
+                        echo '        <p class="text-secondary"><small>Cantidad:</small> ' . $car['cantidad'] . '</p>';
+                        echo '        <form method="POST" action="eliminar_producto.php" onsubmit="return confirm(\'¿Estás seguro de que quieres eliminar este producto?\');">';
+                        echo '            <input type="hidden" name="producto_id" value="' . $car['id'] . '">';
+                        echo '            <input type="hidden" name="plataforma" value="' . $car['plataforma'] . '">';
+                        echo '            <button type="submit" class="btn btn-danger btn-sm mt-2">Eliminar Producto</button>';
+                        echo '        </form>';
+                        echo '    </div>';
+                        echo '</div>';
+                    endforeach;
+
+                    // Muestra el total y el botón para proceder a la compra
+                    echo '<div class="col-12 d-flex align-items-center justify-content-end my-4">';
+                    echo '    <div class="text-end">';
+                    if($cantproductos >1){// Muestra el total
+                        echo '        <h4 class="text-end">Total ('. $cantproductos . ' productos): $' .  $total . '</h4>'; 
+                    }else{
+                        echo '        <h4 class="text-end">Total ('. $cantproductos . ' producto): $' .  $total . '</h4>'; 
+                    }
+                    echo '        <a href="compra.php" class="btn btn-success mt-2 text-end">Comprar</a>'; // Botón para ir a compra.php
+                    echo '    </div>';
+                    echo '</div>';
+                }
+                ?>
             </div>
-            <div class="mb-3 mt-3">
-                <label for="correo" class="form-label">Correo:</label>
-                <input type="email" class="form-control" id="correo" placeholder="Ingresa tu correo" name="correo" required value="<?php echo htmlspecialchars($correo); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="contra" class="form-label">Contraseña:</label>
-                <input type="password" class="form-control" id="contra" placeholder="Crea tu contraseña" name="contra" required value="<?php echo htmlspecialchars($contra); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="naci" class="form-label">Nacimiento:</label>
-                <input type="date" class="form-control" id="naci" name="naci" required value="<?php echo htmlspecialchars($naci); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="tarjeta" class="form-label">Tarjeta:</label>
-                <input type="number" class="form-control" id="tarjeta" placeholder="16 dígitos" name="tarjeta" required value="<?php echo htmlspecialchars($tarjeta); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="postal" class="form-label">Código Postal:</label>
-                <input type="number" class="form-control" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
-            </div>
-            <div class="my-3">
-                <button type="submit" class="btn btn-primary w-100">Crear</button>
-            </div>
-        </form>
+        </div>
+
     </div>
 </body>
 </html>
-

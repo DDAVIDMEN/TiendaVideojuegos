@@ -1,49 +1,26 @@
 <?php
 include("conexion.php");
 
-$error = "";
-$nombre = $correo = $contra = $naci = $tarjeta = $postal = ""; // Inicializar las variables
+$user_id = $_SESSION['user_id'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Escapar y almacenar los datos del formulario
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $correo = mysqli_real_escape_string($con, $_POST['correo']);
-    $contra = mysqli_real_escape_string($con, $_POST['contra']);
-    $naci = mysqli_real_escape_string($con, $_POST['naci']);
-    $tarjeta = mysqli_real_escape_string($con, $_POST['tarjeta']);
-    $postal = mysqli_real_escape_string($con, $_POST['postal']);
-
-    // Verificar si el correo ya existe en la base de datos
-    $query = "SELECT id FROM usuarios WHERE correo = '$correo'";
-    $result = mysqli_query($con, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        // Si el correo ya existe, establecer el mensaje de error
-        $error = "Ya existe un usuario registrado con este correo. Intente con otro";
-    } else {
-        // Si el correo no existe, insertar los datos del usuario
-        $insert_query = "INSERT INTO usuarios (nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal) 
-                         VALUES ('$nombre', '$correo', '$contra', '$naci', '$tarjeta', '$postal')";
-
-        if (mysqli_query($con, $insert_query)) {
-            // Obtén el ID del usuario recién insertado
-            $user_id = mysqli_insert_id($con);
-
-            // Guarda el ID en la variable de sesión
-            $_SESSION['user_id'] = $user_id;
-
-            // Redirigir a cuenta.php si la inserción fue exitosa
-            header("Location: cuenta.php");
-            exit();
-        } else {
-            // Mostrar un error si ocurre un problema con la inserción
-            $error = "Error al registrar el usuario. Inténtalo nuevamente.";
-        }
-    }
-
-    // Cerrar la conexión
-    mysqli_close($con);
+// Consulta SQL
+$query = "SELECT his.fecha, pro.id, pro.nombre, his.precio, his.plataforma, pro.fotos, his.cantidad
+          FROM historial his
+          JOIN productos pro ON his.producto = pro.id
+          WHERE his.usuario = $user_id
+          ORDER BY his.fecha DESC, his.id DESC;";
+if (mysqli_connect_errno()) {
+    echo "<div class='alert alert-danger'><strong>Error!</strong>" . mysqli_connect_error() . "</div>";
 }
+
+$result = mysqli_query($con, $query);
+$historial = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $fecha = $row['fecha'];
+    $historial[$fecha][] = $row; // Agrupa por fecha
+}
+mysqli_free_result($result);
+mysqli_close($con);
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Historial</title>
     <!-- Latest compiled and minified CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
@@ -68,6 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
+                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown">Categorías</a>
@@ -130,48 +108,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1">D&D Games</h1>
         </div>
-        <div class="text-center">
-            <p class="mb-0">¿Ya tienes una cuenta?</p>
-            <a href="login.php" class="text-secondary">Inicia sesión</a>
-        </div>
         <br>
-        <h2 class="my-2">Nuevo Usuario</h2>
-
-        <!-- Mostrar el mensaje de error si existe -->
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger text-center"><?php echo $error; ?></div>
-        <?php endif; ?>
-
-        <form action="registro.php" method="post">
-            <div class="mb-3 mt-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre" name="nombre" required value="<?php echo htmlspecialchars($nombre); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="correo" class="form-label">Correo:</label>
-                <input type="email" class="form-control" id="correo" placeholder="Ingresa tu correo" name="correo" required value="<?php echo htmlspecialchars($correo); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="contra" class="form-label">Contraseña:</label>
-                <input type="password" class="form-control" id="contra" placeholder="Crea tu contraseña" name="contra" required value="<?php echo htmlspecialchars($contra); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="naci" class="form-label">Nacimiento:</label>
-                <input type="date" class="form-control" id="naci" name="naci" required value="<?php echo htmlspecialchars($naci); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="tarjeta" class="form-label">Tarjeta:</label>
-                <input type="number" class="form-control" id="tarjeta" placeholder="16 dígitos" name="tarjeta" required value="<?php echo htmlspecialchars($tarjeta); ?>">
-            </div>
-            <div class="mb-3 mt-3">
-                <label for="postal" class="form-label">Código Postal:</label>
-                <input type="number" class="form-control" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
-            </div>
-            <div class="my-3">
-                <button type="submit" class="btn btn-primary w-100">Crear</button>
-            </div>
-        </form>
+        <h2 class="my-4">Historial de Compras</h2>
+        <div class="container">
+            <?php if (empty($historial)): ?>
+                <p class="text-center">No hay historial disponible</p>
+            <?php else: ?>
+                <?php foreach ($historial as $fecha => $productos): ?>
+                    <?php 
+                    $totalPorFecha = 0; 
+                    $totalProductos =0;
+                    ?>
+                    <div class="my-4">
+                        <h4>Fecha: <?php echo htmlspecialchars($fecha); ?></h4>
+                        <hr>
+                        <?php foreach ($productos as $producto): ?>
+                            <?php 
+                                $subtotal = $producto['precio'] * $producto['cantidad'];
+                                $totalPorFecha += $subtotal;
+                                $totalProductos += $producto['cantidad'];
+                            ?>
+                            <div class="d-flex align-items-center mb-4 pb-3">
+                                <div class="col-3 text-center">
+                                    <a href="detalles.php?id=<?php echo $producto['id']; ?>" class="text-decoration-none">
+                                        <img src="data:image/jpeg;base64,<?php echo base64_encode($producto['fotos']); ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" width="100" height="150">
+                                        <h5 class="text-body"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
+                                    </a>
+                                </div>
+                                <div class="col-9 text-end">
+                                    <h5 class="text-body">Precio: $<?php echo htmlspecialchars($producto['precio']); ?></h5>
+                                    <h6 class="text-body">Plataforma: <?php echo htmlspecialchars($producto['plataforma']); ?></h6>
+                                    <p class="text-secondary"><small>Cantidad:</small> <?php echo $producto['cantidad']; ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        <!-- Muestra el total por fecha -->
+                        <div class="text-end">
+                            <?php
+                                if($totalProductos >1){// Muestra el total
+                                    echo '        <h4>Total ('. $totalProductos . ' productos): $' .  $totalPorFecha . '</h4>'; 
+                                }else{
+                                    echo '        <h4>Total ('. $totalProductos . ' producto): $' .  $totalPorFecha . '</h4>'; 
+                                }
+                            ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>
-

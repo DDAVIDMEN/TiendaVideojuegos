@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?php echo $cod ?>" required>
             </div>
 
-            <button type="submit" class="btn btn-primary mb-4">Actualizar</button>
+            <button type="submit" class="btn btn-primary mb-4 w-100">Actualizar</button>
         </form>
 
         <!-- Si la actualización fue exitosa, mostramos el mensaje emergente -->

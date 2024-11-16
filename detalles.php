@@ -150,7 +150,7 @@
                 ?>
                     <p class="text-danger"><strong>Oferta Disponible</strong></p>
                     <p><strong>Antes:</strong> <span style="text-decoration: line-through; color: gray;">$<?php echo htmlspecialchars($game['precio']); ?></span></p>
-                    <p><strong>Ahora:</strong> $<?php echo number_format($precio_descuento, 0); ?></p>
+                    <p><strong>Ahora:</strong> $<?php echo $precio_descuento; ?></p>
                 <?php else: ?>
                     <p><strong>Precio:</strong> $<?php echo htmlspecialchars($game['precio']); ?></p>
                 <?php endif; ?>
@@ -173,13 +173,18 @@
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                        
+                        <br><br>
+                        <div class="d-flex align-items-center">
+                            <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
+                        </div>
                         <!-- Campos ocultos para enviar id y precio -->
                         <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
-                        <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? number_format($precio_descuento, 0) : $game['precio']; ?>">
-                        <br>
+                        <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
                         <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
                     </form>
+
+                    
                     <?php else: ?>
                         <!-- Solo el botón si no hay sesión -->
                         <form action="detalles.php" method="post">
@@ -192,6 +197,11 @@
                                 <?php endforeach; ?>
                             </div>
                             <br><br>
+                            <div class="d-flex align-items-center">
+                                <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
+                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
+                            </div>
+                            <br>
                             <a href="login.php" class="btn btn-primary">Añadir al carrito</a>
                         </form>
                     <?php endif; ?>

@@ -124,6 +124,7 @@ mysqli_close($con);
             <p><strong>Código Postal:</strong> <?php echo $codigo_postal; ?></p>
             <div class="mt-4">
                 <a href="cerrar_sesion.php" class="btn btn-secondary">Cerrar Sesión</a>
+                <a href="historial.php" class="btn btn-primary">Historial</a>
                 <a href="borrar_cuenta.php" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu cuenta?');">Eliminar Cuenta</a>
             </div>
         </div>

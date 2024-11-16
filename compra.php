@@ -1,37 +1,23 @@
 <?php
     include("conexion.php");
 
-    $producto_id = $_POST['producto_id'];
-    $precio = $_POST['precio'];
-    $plataforma = $_POST['plataforma'];
-    $cantidad = $_POST['cantidad'];
     $user_id = $_SESSION['user_id'];
 
-    // Verificar si el producto ya existe en el carrito
-    $check_query = "SELECT cantidad FROM carrito WHERE usuario = $user_id AND producto = $producto_id AND plataforma = '$plataforma'";
-    $check_result = mysqli_query($con, $check_query);
+    // Obtener la fecha y hora actual del servidor
+    $fecha_actual = date("Y-m-d H:i:s"); // Formato compatible con TIMESTAMP
 
-    if (mysqli_num_rows($check_result) > 0) {
-        // Si el producto existe, actualizar la cantidad
-        $row = mysqli_fetch_assoc($check_result);
-        $nueva_cantidad = $row['cantidad'] + $cantidad;
 
-        $update_query = "UPDATE carrito SET cantidad = $nueva_cantidad WHERE usuario = $user_id AND producto = $producto_id AND plataforma = '$plataforma'";
-        if (mysqli_query($con, $update_query)) {
-            $success = true;
-        } else {
-            echo "<h1>Error al actualizar el producto en el carrito. Inténtalo nuevamente.<h1>";
-        }
-    } else {
-        // Si no existe, insertar un nuevo registro
-        $insert_query = "INSERT INTO carrito (usuario, producto, precio, plataforma, cantidad) 
-                         VALUES ($user_id, $producto_id, $precio, '$plataforma', $cantidad)";
+        $insert_query = "INSERT INTO historial (usuario, producto,fecha, precio, plataforma, cantidad)
+        SELECT usuario, producto, '$fecha_actual', precio, plataforma, cantidad
+        FROM carrito
+        WHERE usuario = $user_id";
+
         if (mysqli_query($con, $insert_query)) {
             $success = true;
         } else {
             echo "<h1>Error al registrar el producto en el carrito. Inténtalo nuevamente.<h1>";
         }
-    }
+    
 
     mysqli_close($con);
 ?>
@@ -40,15 +26,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Añadir al carrito</title>
+    <title>Compra exitosa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Función para mostrar el mensaje de éxito y redirigir
-        function MensajeExito() {
-            alert("Producto añadido al carrito");
+        function CompraExito() {
+            alert("Compra Exitosa");
             setTimeout(function() {
-                window.location.href = "carrito.php"; 
+                window.location.href = "historial.php"; 
             }); 
         }
     </script>
@@ -129,7 +115,7 @@
         <br>
         <?php if (isset($success) && $success): ?>
             <script>
-               MensajeExito(); // Llamar a la función para mostrar el mensaje
+               CompraExito(); // Llamar a la función para mostrar el mensaje
             </script>
         <?php endif; ?>
     </div>
