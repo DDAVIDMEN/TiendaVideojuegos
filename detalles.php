@@ -43,6 +43,13 @@
     mysqli_close($con);
 ?>
 
+<!-- Mostrar mensajes de error -->
+<?php if (isset($_GET['error']) && $_GET['error'] === 'stock_insuficiente'): ?>
+    <div class="alert alert-danger mt-3">
+        La cantidad solicitada excede el inventario disponible. Por favor, selecciona una cantidad menor.
+    </div>
+<?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -102,9 +109,9 @@
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
 
                 <!-- Mostrar enlaces dependiendo del estado de sesión -->
@@ -125,8 +132,14 @@
                                 <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="cuenta.php" class="nav-link text-light">Mi cuenta</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Mi cuenta</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
+                            </ul>
                         </li>
                     </ul>
                 <?php endif; ?>
@@ -135,62 +148,46 @@
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1">D&D Games</h1>
         </div>
-        <h1 class="my-4"><?php echo htmlspecialchars($game['nombre']); ?></h1>
-        <div class="row">
-            <div class="col-md-6">
-                <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
-                     alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="400" height="450">
+        <?php if (!$game): ?>
+            <div class='container my-5 text-center'>
+                <h2 class="display-5">Producto no encontrado</h2>
+                <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
             </div>
-            <div class="col-md-6">
-                <p><strong>Descripción:</strong> <?php echo htmlspecialchars($game['descripcion']); ?></p>
+        <?php else: ?>
+            <h1 class="my-4"><?php echo htmlspecialchars($game['nombre']); ?></h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
+                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="400" height="450">
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Descripción:</strong> <?php echo htmlspecialchars($game['descripcion']); ?></p>
 
-                <?php if (!is_null($game['descuento'])): 
-                    $descuento = $game['descuento'] / 100;
-                    $precio_descuento = $game['precio'] * (1 - $descuento);
-                ?>
-                    <p class="text-danger"><strong>Oferta Disponible</strong></p>
-                    <p><strong>Antes:</strong> <span style="text-decoration: line-through; color: gray;">$<?php echo htmlspecialchars($game['precio']); ?></span></p>
-                    <p><strong>Ahora:</strong> $<?php echo $precio_descuento; ?></p>
-                <?php else: ?>
-                    <p><strong>Precio:</strong> $<?php echo htmlspecialchars($game['precio']); ?></p>
-                <?php endif; ?>
-
-                <p><strong>Disponibles:</strong> <?php echo htmlspecialchars($game['cantidad_almacen']); ?></p>
-                <p><strong>Desarrollador:</strong> <?php echo htmlspecialchars($game['desarrollador']); ?></p>
-                <p><strong>Origen:</strong> <?php echo htmlspecialchars($game['origen']); ?></p>
-                <p><strong>Categoría:</strong> <?php echo htmlspecialchars($game['categoria']); ?></p>
-
-                <p><strong>Plataformas Disponibles:</strong></p>
-
-                <!-- Formulario para añadir al carrito -->
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <form action="ana_carrito.php" method="post">
-                        <div class="btn-group" role="group" aria-label="Plataformas">
-                            <?php foreach ($platforms as $index => $platform): ?>
-                                <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
-                                <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
-                                    <?php echo htmlspecialchars($platform); ?>
-                                </label>
-                            <?php endforeach; ?>
-                        </div>
-                        <br><br>
-                        <div class="d-flex align-items-center">
-                            <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
-                        </div>
-                        <!-- Campos ocultos para enviar id y precio -->
-                        <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
-                        <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
-                        <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
-                    </form>
-
-                    
+                    <?php if (!is_null($game['descuento'])): 
+                        $descuento = $game['descuento'] / 100;
+                        $precio_descuento = $game['precio'] * (1 - $descuento);
+                    ?>
+                        <p class="text-danger"><strong>Oferta Disponible</strong></p>
+                        <p><strong>Antes:</strong> <span style="text-decoration: line-through; color: gray;">$<?php echo htmlspecialchars($game['precio']); ?></span></p>
+                        <p><strong>Ahora:</strong> $<?php echo $precio_descuento; ?></p>
                     <?php else: ?>
-                        <!-- Solo el botón si no hay sesión -->
-                        <form action="detalles.php" method="post">
+                        <p><strong>Precio:</strong> $<?php echo htmlspecialchars($game['precio']); ?></p>
+                    <?php endif; ?>
+
+                    <p><strong>Disponibles:</strong> <?php echo htmlspecialchars($game['cantidad_almacen']); ?></p>
+                    <p><strong>Desarrollador:</strong> <?php echo htmlspecialchars($game['desarrollador']); ?></p>
+                    <p><strong>Origen:</strong> <?php echo htmlspecialchars($game['origen']); ?></p>
+                    <p><strong>Categoría:</strong> <?php echo htmlspecialchars($game['categoria']); ?></p>
+
+                    <p><strong>Plataformas Disponibles:</strong></p>
+
+                    <!-- Formulario para añadir al carrito -->
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php if ($game['cantidad_almacen'] > 0): ?>
+                        <form action="ana_carrito.php" method="post">
                             <div class="btn-group" role="group" aria-label="Plataformas">
                                 <?php foreach ($platforms as $index => $platform): ?>
-                                    <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="" required>
+                                    <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
                                     <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
                                         <?php echo htmlspecialchars($platform); ?>
                                     </label>
@@ -199,29 +196,59 @@
                             <br><br>
                             <div class="d-flex align-items-center">
                                 <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
+                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
                             </div>
-                            <br>
-                            <a href="login.php" class="btn btn-primary">Añadir al carrito</a>
+                            <!-- Campos ocultos para enviar id y precio -->
+                            <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
+                            <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
+                            <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
                         </form>
+                        <?php else: ?>
+                            <p class="text-danger"><strong>Este producto ya no está disponible.</strong></p>
+                        <?php endif; ?>
+
+                         <!-- Solo el botón si NO HAY SESIÓN-->
+                        <?php else: ?> 
+                            <?php if ($game['cantidad_almacen'] > 0): ?>
+                            <form action="detalles.php" method="post">
+                                <div class="btn-group" role="group" aria-label="Plataformas">
+                                    <?php foreach ($platforms as $index => $platform): ?>
+                                        <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="" required>
+                                        <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
+                                            <?php echo htmlspecialchars($platform); ?>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <br><br>
+                                <div class="d-flex align-items-center">
+                                    <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
+                                </div>
+                                <br>
+                                <a href="login.php" class="btn btn-primary">Añadir al carrito</a>
+                            </form>
+                            <?php else: ?>
+                                <p class="text-danger"><strong>Este producto ya no está disponible.</strong></p>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <!-- Sección de Reseñas -->
+                    <h2 class="my-4">Reseñas</h2>
+                    <?php if (empty($reviews)): ?>
+                        <p>Aún no hay reseñas para este producto.</p>
+                    <?php else: ?>
+                        <?php foreach ($reviews as $review): ?>
+                            <div class="review mb-3">
+                                <p><strong>Usuario:</strong> <?php echo htmlspecialchars($review['nombre']); ?></p>
+                                <p><strong>Calificación:</strong> <?php echo htmlspecialchars($review['calificacion']); ?>/10</p>
+                                <p><strong>Fecha:</strong> <?php echo htmlspecialchars($review['fecha']); ?></p>
+                                <p><strong>Comentario:</strong> <?php echo htmlspecialchars($review['comentario']); ?></p>
+                                
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
-                <!-- Sección de Reseñas -->
-                <h2 class="my-4">Reseñas</h2>
-                <?php if (empty($reviews)): ?>
-                    <p>Aún no hay reseñas para este producto.</p>
-                <?php else: ?>
-                    <?php foreach ($reviews as $review): ?>
-                        <div class="review mb-3">
-                            <p><strong>Usuario:</strong> <?php echo htmlspecialchars($review['nombre']); ?></p>
-                            <p><strong>Calificación:</strong> <?php echo htmlspecialchars($review['calificacion']); ?>/10</p>
-                            <p><strong>Fecha:</strong> <?php echo htmlspecialchars($review['fecha']); ?></p>
-                            <p><strong>Comentario:</strong> <?php echo htmlspecialchars($review['comentario']); ?></p>
-                            
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>

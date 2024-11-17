@@ -36,7 +36,10 @@
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
-                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavbar">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown">Categorías</a>
@@ -64,10 +67,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
+                    </div>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
 
                 <!-- Mostrar enlaces dependiendo del estado de sesión -->
@@ -80,18 +84,27 @@
                             <a href="login.php" class="nav-link">Iniciar sesión</a>
                         </li>
                     </ul>
+                    
                 <?php else: ?>
-
+                   
                     <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="navbar-brand" href="carrito.php">
                                 <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="cuenta.php" class="nav-link text-light">Mi cuenta</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Mi cuenta</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
+                            </ul>
                         </li>
                     </ul>
+                    
+                    
                 <?php endif; ?>
             </div>
         </nav>
@@ -108,7 +121,7 @@
                     while ($row = mysqli_fetch_array($result)) {
                         echo '<div class="col-md-3 text-center mb-4">';
                         echo '<a href="detalles.php?id=' . $row['id'] . '" class="text-decoration-none">';
-                        echo '<img src="data:image/jpeg;base64,' . base64_encode($row['fotos']) . '" alt="' . $row['nombre'] . '" width="100" height="150">';
+                        echo '<img src="data:image/jpeg;base64,' . base64_encode($row['fotos']) . '" alt="' . $row['nombre'] . '" width="200" height="300">';
                         echo '<h5 class="text-body">' . htmlspecialchars($row['nombre']) . '</h5>';
                         echo '</a>';
                         echo '</div>';

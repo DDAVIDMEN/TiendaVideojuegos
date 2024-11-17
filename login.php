@@ -78,9 +78,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
 
                 <!-- Mostrar enlaces dependiendo del estado de sesión -->

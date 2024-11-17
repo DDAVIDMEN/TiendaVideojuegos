@@ -1,24 +1,45 @@
 <?php
 include("conexion.php");
 
-
 // Obtener el ID del usuario de la sesión
 $user_id = $_SESSION['user_id'];
 
-// Consulta para eliminar el usuario
-$query = "DELETE FROM usuarios WHERE id = $user_id";
+// Iniciar una transacción para garantizar que todo se elimine correctamente
+mysqli_begin_transaction($con);
 
-if (mysqli_query($con, $query)) {
+try {
+    // Eliminar las reseñas del usuario
+    $query_resenas = "DELETE FROM resenas WHERE Usuario = $user_id";
+    mysqli_query($con, $query_resenas);
+
+    // Eliminar los elementos del carrito del usuario
+    $query_carrito = "DELETE FROM carrito WHERE Usuario = $user_id";
+    mysqli_query($con, $query_carrito);
+
+    // Eliminar el historial de compras del usuario
+    $query_historial = "DELETE FROM historial WHERE Usuario = $user_id";
+    mysqli_query($con, $query_historial);
+
+    // Finalmente, eliminar al usuario
+    $query_usuario = "DELETE FROM usuarios WHERE ID = $user_id";
+    mysqli_query($con, $query_usuario);
+
+    // Confirmar los cambios
+    mysqli_commit($con);
+
     // Si la eliminación fue exitosa, cerrar la sesión y redirigir a la página de inicio
     session_unset();
     session_destroy();
-} else {
-    // En caso de error, mostrar un mensaje
-    echo "<div class='alert alert-danger'>Error: No se pudo borrar el usuario.</div>";
+} catch (Exception $e) {
+    // Si ocurre un error, revertir los cambios
+    mysqli_rollback($con);
+    echo "<div class='alert alert-danger'>Error: No se pudo borrar el usuario y sus datos asociados.</div>";
 }
+
 // Cerrar la conexión
 mysqli_close($con);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,9 +92,9 @@ mysqli_close($con);
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
 
                 <!-- Mostrar enlaces dependiendo del estado de sesión -->
@@ -94,8 +115,14 @@ mysqli_close($con);
                                 <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="cuenta.php" class="nav-link text-light">Mi cuenta</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Mi cuenta</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
+                            </ul>
                         </li>
                     </ul>
                 <?php endif; ?>
@@ -107,7 +134,9 @@ mysqli_close($con);
         <br>
         <div class='mt-4 p-5 text-center'>
             <h1 class='display-1 '>¡Cuenta Borrada con Éxito!</h1>
-            <p>Esperemos vuelvas pronto</p>
+            <p>Esperamos que vuelvas pronto</p>
+            <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
+ 
         </div>
     </div>
 

@@ -13,7 +13,18 @@
         WHERE usuario = $user_id";
 
         if (mysqli_query($con, $insert_query)) {
-            $success = true;
+            
+            $delete_query = "DELETE FROM carrito WHERE usuario = $user_id";
+            if (mysqli_query($con, $delete_query)) {
+                // Si todo fue exitoso, mostrar un mensaje y redirigir al historial
+                $success = true;
+            } else {
+                // Si no se pudieron eliminar los productos del carrito
+                echo "<script>
+                    alert('Hubo un problema al vaciar el carrito. Por favor, inténtalo nuevamente.');
+                    window.location.href = 'carrito.php';
+                </script>";
+            }
         } else {
             echo "<h1>Error al registrar el producto en el carrito. Inténtalo nuevamente.<h1>";
         }
@@ -78,9 +89,9 @@
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
 
                 <!-- Mostrar enlaces dependiendo del estado de sesión -->
@@ -101,8 +112,14 @@
                                 <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="cuenta.php" class="nav-link text-light">Mi cuenta</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Mi cuenta</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
+                            </ul>
                         </li>
                     </ul>
                 <?php endif; ?>

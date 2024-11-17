@@ -1,36 +1,42 @@
 <?php
+    
     include("conexion.php");
 
-    //Query
-    $query = "select pro.id,pro.fotos,pro.nombre 
-     from productos pro, categoria cat where cat.id = pro.categoria and cat.id = 2;";
-    if (mysqli_connect_errno()) {
-        echo " <div class='alert alert-danger'>
-            <strong>Error!</strong>" . mysqli_connect_error() ."
-            </div>" ;
-      }
-  
-      $result = mysqli_query($con,$query);
-      mysqli_close($con);
-?>
+    $nombre = $_GET['nombre'];
+    
 
+    //Query
+    $query = "select id, fotos, nombre from productos where nombre = '$nombre';";
+    if (mysqli_connect_errno()) {
+        echo "<div class='alert alert-danger'>
+            <strong>Error!</strong>" . mysqli_connect_error() ."
+            </div>";
+    }
+
+    $result = mysqli_query($con, $query);
+    $buscar = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $buscar[] = $row;
+    }
+    mysqli_free_result($result);
+    mysqli_close($con);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deportes</title>
+    <title>Búsqueda</title>
     <!-- Latest compiled and minified CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <!--Contenedor principal de BS5-->
     <div class="container">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
             <div class="container text-center">
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -38,7 +44,10 @@
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
-                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavbar">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown">Categorías</a>
@@ -66,6 +75,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
+                    </div>
                 </ul>
                 <form class="d-flex" action="buscar.php" method="GET">
                     <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
@@ -82,8 +92,9 @@
                             <a href="login.php" class="nav-link">Iniciar sesión</a>
                         </li>
                     </ul>
+    
                 <?php else: ?>
-
+                   
                     <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="navbar-brand" href="carrito.php">
@@ -100,30 +111,39 @@
                             </ul>
                         </li>
                     </ul>
+                    
+                    
                 <?php endif; ?>
             </div>
         </nav>
+
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
-            <h1 class="display-1 ">D&D Games</h1>
+            <h1 class="display-1">D&D Games</h1>
         </div>
         <br>
-        <h2 class= "my-2"> Juegos de Deportes</h2>
+        <h2 class="my-2">Búsqueda:</h2>
         <br>
-        <div class="container">
-        <div class="row">
+        <div class="container d-flex justify-content-center align-items-center">
+            <div class="row">
                 <?php
-                    while ($row = mysqli_fetch_array($result)) {
-                        echo '<div class="col-md-3 text-center mb-4">';
-                        echo '<a href="detalles.php?id=' . $row['id'] . '" class="text-decoration-none">';
-                        echo '<img src="data:image/jpeg;base64,' . base64_encode($row['fotos']) . '" alt="' . $row['nombre'] . '" width="200" height="300">';
-                        echo '<h5 class="text-body">' . htmlspecialchars($row['nombre']) . '</h5>';
+                if (empty($buscar)) {
+                    echo '<p class="text-center">No se encontró nada</p>';
+                } else {          
+                    foreach ($buscar as $bus):
+                        echo '<div class="text-center mb-4">';
+                        echo '<a href="detalles.php?id=' . $bus['id'] . '" class="text-decoration-none">';
+                        echo '<div class="d-flex flex-column align-items-center">'; // Contenedor para centrar
+                        echo '<img src="data:image/jpeg;base64,' . base64_encode($bus['fotos']) . '" alt="' . $bus['nombre'] . '" class="mb-2" width="200" height="300">';
+                        echo '<h5 class="text-body">' . htmlspecialchars($bus['nombre']) . '</h5>';
+                        echo '</div>';
                         echo '</a>';
                         echo '</div>';
-                    }     
+                    endforeach;
+                }
                 ?>
-         </div>
+            </div>
+        </div>
+
     </div>
-    </div>
-        
 </body>
 </html>
