@@ -2,8 +2,7 @@
     include("conexion.php");
 
     //Query
-    $query = "select p.nombre,p.precio, descuento,fecha_inicial,fecha_final from promociones s, productos
-        p where s.producto = p.id;";
+    $query = "select nombre, correo, contrasena, nacimiento, tarjeta, codigo_postal, administrador from usuarios; ";
     if (mysqli_connect_errno()) {
         echo " <div class='alert alert-danger'>
             <strong>Error!</strong>" . mysqli_connect_error() ."
@@ -96,27 +95,62 @@ if (isset($_SESSION['user_id'])){
                         </li>
                         <?php endif; ?>
                     </div>
-                </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" placeholder="Buscar">
-                    <button class="btn btn-primary" type="button">Buscar</button>
-                  </form>
+                    </ul>
+                <form class="d-flex" action="buscar.php" method="GET">
+                    <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
+                </form>
+
+                <!-- Mostrar enlaces dependiendo del estado de sesión -->
+                <?php if (!isset($_SESSION['user_id'])): ?>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="registro.php" class="nav-link">Crear cuenta</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="login.php" class="nav-link">Iniciar sesión</a>
+                        </li>
+                    </ul>
+                    
+                <?php else: ?>
+                   
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="carrito.php">
+                                <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Mi cuenta</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    
+                <?php endif; ?>
             </div>
         </nav>
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
             <h1 class="display-1 ">D&D Games</h1>
         </div>
         <br>
-        <h2 class= "my-2"> Ofertas</h2>
+        <h2 class= "my-2">Usuarios Registrados</h2>
         <div class="container">
         <table class="table table-striped" >
             <thead>
                 <tr>
-                    <th>Juego</th>
-                    <th>Precio Anterior</th>
-                    <th>Precio Nuevo</th>
-                    <th>Desde</th>
-                    <th>Hasta</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Contraseña</th>
+                    <th>Nacimiento</th>
+                    <th>Tarjeta</th>
+                    <th>Código Postal</th>
+                    <th>Administrador</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,10 +158,12 @@ if (isset($_SESSION['user_id'])){
                     while ($row = mysqli_fetch_array($result)) {
                         echo "<tr>";
                         echo "<td>" . $row['nombre'] . "</td>";
-                        echo "<td>" . $row['precio'] . "</td>";
-                        echo "<td>" . $row['descuento'] . "</td>";
-                        echo "<td>" . $row['fecha_inicial'] . "</td>";
-                        echo "<td>" . $row['fecha_final'] . "</td>";
+                        echo "<td>" . $row['correo'] . "</td>";
+                        echo "<td>" . $row['contrasena'] . "</td>";
+                        echo "<td>" . $row['nacimiento'] . "</td>";
+                        echo "<td>" . $row['tarjeta'] . "</td>";
+                        echo "<td>" . $row['codigo_postal'] . "</td>";
+                        echo "<td>" . $row['administrador'] . "</td>";
                         echo "</tr>";
                     }
                 ?>
@@ -135,34 +171,5 @@ if (isset($_SESSION['user_id'])){
         </table>
     </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Selecciona todas las filas de la tabla (excluyendo el encabezado)
-            let filas = document.querySelectorAll("table.table tbody tr");
-
-            // Itera sobre cada fila
-            filas.forEach(fila => {
-                // Obtiene el precio anterior y el descuento en porcentaje
-                let precioCelda = fila.cells[1];
-                let descuentoCelda = fila.cells[2];
-
-                // Convierte los valores a números
-                let precio = parseFloat(precioCelda.textContent);
-                let descuento = parseFloat(descuentoCelda.textContent);
-
-                // Convierte el descuento en porcentaje (por ejemplo, 30 -> 0.3)
-                let descuentoPorcentaje = descuento / 100;
-
-                // Calcula el nuevo precio aplicando el descuento
-                let precioConDescuento = precio * (1 - descuentoPorcentaje);
-
-                // Redondea el resultado a dos decimales si es necesario
-                precioConDescuento = precioConDescuento.toFixed(0);
-
-                // Actualiza la celda de descuento con el nuevo precio
-                descuentoCelda.textContent = precioConDescuento;
-            });
-        });
-    </script>
 </body>
 </html>

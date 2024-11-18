@@ -225,7 +225,7 @@
                             <br><br>
                             <div class="d-flex align-items-center">
                                 <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
+                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="0" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
                             </div>
                             <!-- Campos ocultos para enviar id y precio -->
                             <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
@@ -255,7 +255,7 @@
                                 <br><br>
                                 <div class="d-flex align-items-center">
                                     <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="0" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
                                 </div>
                                 <br>
                                 <a href="login.php" class="btn btn-primary">Añadir al carrito</a><br>
