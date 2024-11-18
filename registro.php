@@ -41,9 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Cerrar la conexión
-    mysqli_close($con);
 }
+
+// Cerrar la conexión
+mysqli_close($con);
 ?>
 
 <!DOCTYPE html>
@@ -68,33 +69,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Categorías</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="accion.php">Acción</a></li>
-                            <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
-                            <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
-                            <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
-                            <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="oferta.php">Ofertas</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Exclusivos</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
-                            <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
-                            <li><a class="dropdown-item" href="switch.php">Switch</a></li>
-                            <li><a class="dropdown-item" href="pc.php">PC</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.php">Acerca de</a>
-                    </li>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Categorías</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="accion.php">Acción</a></li>
+                                <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
+                                <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
+                                <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
+                                <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="oferta.php">Ofertas</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Exclusivos</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
+                                <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
+                                <li><a class="dropdown-item" href="switch.php">Switch</a></li>
+                                <li><a class="dropdown-item" href="pc.php">PC</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">Acerca de</a>
+                        </li>
+                    </div>
                 </ul>
                 <form class="d-flex" action="buscar.php" method="GET">
                     <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
@@ -163,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="mb-3 mt-3">
                 <label for="naci" class="form-label">Nacimiento:</label>
-                <input type="date" class="form-control" id="naci" name="naci" required value="<?php echo htmlspecialchars($naci); ?>">
+                <input type="date" class="form-control w-25" id="naci" name="naci" required value="<?php echo htmlspecialchars($naci); ?>">
             </div>
             <div class="mb-3 mt-3">
                 <label for="tarjeta" class="form-label">Tarjeta:</label>
@@ -171,7 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="mb-3 mt-3">
                 <label for="postal" class="form-label">Código Postal:</label>
-                <input type="number" class="form-control" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
+                <input type="number" class="form-control w-25" id="postal" placeholder="Zona Postal" name="postal" required value="<?php echo htmlspecialchars($postal); ?>">
             </div>
             <div class="my-3">
                 <button type="submit" class="btn btn-primary w-100">Crear</button>

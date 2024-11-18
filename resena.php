@@ -1,46 +1,39 @@
 <?php
-    include("conexion.php");
-
-    //Query
-    $query = "SELECT p.id, p.fotos, p.nombre  FROM productos p JOIN producto_plataforma pp ON p.ID = pp.Producto 
-    JOIN categoria cat ON cat.ID = p.Categoria GROUP BY p.ID HAVING COUNT(pp.Plataforma) = 1 AND MAX(pp.Plataforma) = 3;";
-    if (mysqli_connect_errno()) {
-        echo " <div class='alert alert-danger'>
-            <strong>Error!</strong>" . mysqli_connect_error() ."
-            </div>" ;
-      }
-  
-      $result = mysqli_query($con,$query);
+include("conexion.php");
 
 
-      //Admin 
-    if (isset($_SESSION['user_id'])){
-        $admin_id = $_SESSION['user_id'];
-        $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
-        $resultadmin = mysqli_query($con, $queryadmin);
-        $admin = mysqli_fetch_assoc($resultadmin);
-    }else{
-        $admin['administrador']=0;
-    }
+// Obtener el ID del producto enviado desde detalles.php
+$producto_id = $_POST['producto_id'];
 
-      mysqli_close($con);
+// Consulta para obtener el nombre e imagen del producto
+$query = "SELECT nombre, fotos FROM productos WHERE id = $producto_id";
+$result = mysqli_query($con, $query);
+$game = mysqli_fetch_assoc($result);
+
+//Admin 
+if (isset($_SESSION['user_id'])){
+    $admin_id = $_SESSION['user_id'];
+    $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
+    $resultadmin = mysqli_query($con, $queryadmin);
+    $admin = mysqli_fetch_assoc($resultadmin);
+}else{
+    $admin['administrador']=0;
+}
+
+
+mysqli_close($con);
 ?>
 
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Switch</title>
-    <!-- Latest compiled and minified CSS -->
+    <title>Reseña</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <!--Contenedor principal de BS5-->
     <div class="container">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
             <div class="container text-center">
@@ -134,26 +127,39 @@
             </div>
         </nav>
         <div class="mt-4 p-5 bg-primary text-white rounded text-center">
-            <h1 class="display-1 ">D&D Games</h1>
+            <h1 class="display-1">D&D Games</h1>
         </div>
-        <br>
-        <h2 class= "my-2">Exclusivos de Nintendo Switch</h2>
-        <br>
-        <div class="container">
-        <div class="row">
-            <?php
-                    while ($row = mysqli_fetch_array($result)) {
-                        echo '<div class="col-md-3 text-center mb-4">';
-                        echo '<a href="detalles.php?id=' . $row['id'] . '" class="text-decoration-none">';
-                        echo '<img src="data:image/jpeg;base64,' . base64_encode($row['fotos']) . '" alt="' . $row['nombre'] . '" width="200" height="300">';
-                        echo '<h5 class="text-body">' . htmlspecialchars($row['nombre']) . '</h5>';
-                        echo '</a>';
-                        echo '</div>';
-                    }     
-                ?>
+        <?php if (!$game): ?>
+            <div class='container my-5 text-center'>
+                <h2 class="display-5">Producto no encontrado</h2>
+                <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
             </div>
+        <?php else: ?>
+            <h1 class="my-4"><?php echo htmlspecialchars($game['nombre']); ?></h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
+                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="520" height="650">
+                </div>
+                <div class="col-md-6">
+                    <form action="nueva_resena.php" method="POST">
+                        <input type="hidden" name="producto_id" value="<?php echo $producto_id; ?>">
+                        <div class="d-flex align-items-center">
+                            <label for="calificacion" class="form-label fs-5 me-2"><strong>Calificación (1-10):</strong></label>
+                            <input type="number" class="form-control" id="calificacion" name="calificacion" min="1" max="10" step="0.1" style="width: 100px;" required>
+                        </div>
+                        <label for="comentario" class="form-label fs-5"><strong>Comentarios:</strong></label>
+                        <textarea class="form-control" id="comentario" name="comentario" rows="4" maxlength="600" required></textarea>
+                        <button type="submit" class="btn btn-primary mt-5">Enviar Reseña</button>
+                        <a href="detalles.php?id=<?php echo $producto_id; ?>" class="btn btn-danger mt-5">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
-    </div>
-        
 </body>
 </html>
+
+
+
+

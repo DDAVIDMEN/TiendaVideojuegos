@@ -19,6 +19,18 @@
         $buscar[] = $row;
     }
     mysqli_free_result($result);
+
+    //Admin 
+    if (isset($_SESSION['user_id'])){
+        $admin_id = $_SESSION['user_id'];
+        $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
+        $resultadmin = mysqli_query($con, $queryadmin);
+        $admin = mysqli_fetch_assoc($resultadmin);
+    }else{
+        $admin['administrador']=0;
+    }
+
+    
     mysqli_close($con);
 ?>
 
@@ -75,6 +87,19 @@
                     <li class="nav-item">
                         <a class="nav-link" href="about.php">Acerca de</a>
                     </li>
+                    <!--Administracion -->
+                    <?php if($admin['administrador'] ==1): ?>
+                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Administrador</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="inventario.php">Inventario</a></li>
+                                <li><a class="dropdown-item" href="nuevo_producto.php">Nuevo Producto</a></li>
+                                <li><a class="dropdown-item" href="modi_producto.php">Modificar Producto</a></li>
+                                <li><a class="dropdown-item" href="usuarios.php">Usuarios</a></li>
+                            </ul>
+                        </li>
+                        <?php endif; ?>
                     </div>
                 </ul>
                 <form class="d-flex" action="buscar.php" method="GET">
@@ -127,7 +152,7 @@
             <div class="row">
                 <?php
                 if (empty($buscar)) {
-                    echo '<p class="text-center">No se encontró nada</p>';
+                    echo '<p class="text-center">No se encontró ningún producto con ese nombre</p>';
                 } else {          
                     foreach ($buscar as $bus):
                         echo '<div class="text-center mb-4">';

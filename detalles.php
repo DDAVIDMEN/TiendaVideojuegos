@@ -7,7 +7,7 @@
     // Consulta para obtener detalles del juego por ID con información de la promoción si existe
     $query = "SELECT pro.nombre, pro.descripcion, fotos, precio, cantidad_almacen, desarrollador, origen, 
                      cat.nombre AS categoria,
-                     promo.descuento, promo.fecha_inicial, promo.fecha_final
+                     promo.descuento, promo.fecha_final
               FROM productos pro
               JOIN categoria cat ON cat.id = pro.categoria
               LEFT JOIN promociones promo ON promo.producto = pro.id
@@ -40,13 +40,24 @@
     }
     mysqli_free_result($result_reviews);
 
+    //Admin 
+    if (isset($_SESSION['user_id'])){
+        $admin_id = $_SESSION['user_id'];
+        $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
+        $resultadmin = mysqli_query($con, $queryadmin);
+        $admin = mysqli_fetch_assoc($resultadmin);
+    }else{
+        $admin['administrador']=0;
+    }
+
+
     mysqli_close($con);
 ?>
 
 <!-- Mostrar mensajes de error -->
 <?php if (isset($_GET['error']) && $_GET['error'] === 'stock_insuficiente'): ?>
     <div class="alert alert-danger mt-3">
-        La cantidad solicitada excede el inventario disponible. Por favor, selecciona una cantidad menor.
+        <p>La cantidad solicitada excede el inventario disponible. Por favor, selecciona una cantidad menor.</p>
     </div>
 <?php endif; ?>
 
@@ -71,7 +82,7 @@
     </style>
 </head>
 <body>
-    <div class="container my-5">
+    <div class="container">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
             <div class="container text-center">
                 <ul class="navbar-nav">
@@ -80,34 +91,51 @@
                             <img src="logo.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                         </a>
                     </li>
-                    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Categorías</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="accion.php">Acción</a></li>
-                            <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
-                            <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
-                            <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
-                            <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="oferta.php">Ofertas</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Exclusivos</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
-                            <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
-                            <li><a class="dropdown-item" href="switch.php">Switch</a></li>
-                            <li><a class="dropdown-item" href="pc.php">PC</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.php">Acerca de</a>
-                    </li>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Categorías</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="accion.php">Acción</a></li>
+                                <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
+                                <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
+                                <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
+                                <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="oferta.php">Ofertas</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Exclusivos</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
+                                <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
+                                <li><a class="dropdown-item" href="switch.php">Switch</a></li>
+                                <li><a class="dropdown-item" href="pc.php">PC</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">Acerca de</a>
+                        </li>
+                        <!--Administracion -->
+                        <?php if($admin['administrador'] ==1): ?>
+                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Administrador</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="inventario.php">Inventario</a></li>
+                                <li><a class="dropdown-item" href="nuevo_producto.php">Nuevo Producto</a></li>
+                                <li><a class="dropdown-item" href="modi_producto.php">Modificar Producto</a></li>
+                                <li><a class="dropdown-item" href="usuarios.php">Usuarios</a></li>
+                            </ul>
+                        </li>
+                        <?php endif; ?>
+                    </div>
                 </ul>
                 <form class="d-flex" action="buscar.php" method="GET">
                     <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
@@ -158,7 +186,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
-                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="400" height="450">
+                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="520" height="650">
                 </div>
                 <div class="col-md-6">
                     <p><strong>Descripción:</strong> <?php echo htmlspecialchars($game['descripcion']); ?></p>
@@ -170,6 +198,7 @@
                         <p class="text-danger"><strong>Oferta Disponible</strong></p>
                         <p><strong>Antes:</strong> <span style="text-decoration: line-through; color: gray;">$<?php echo htmlspecialchars($game['precio']); ?></span></p>
                         <p><strong>Ahora:</strong> $<?php echo $precio_descuento; ?></p>
+                        <p><strong>La oferta finaliza el </strong><?php echo $game['fecha_final']; ?></p>
                     <?php else: ?>
                         <p><strong>Precio:</strong> $<?php echo htmlspecialchars($game['precio']); ?></p>
                     <?php endif; ?>
@@ -203,6 +232,10 @@
                             <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
                             <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
                         </form>
+                        <form action="resena.php" method="post">
+                            <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
+                            <button type="submit" class="btn btn-dark mt-5">Calificar producto</button>
+                        </form>
                         <?php else: ?>
                             <p class="text-danger"><strong>Este producto ya no está disponible.</strong></p>
                         <?php endif; ?>
@@ -222,17 +255,19 @@
                                 <br><br>
                                 <div class="d-flex align-items-center">
                                     <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1"  style="width: 60px;"  required>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="1" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
                                 </div>
                                 <br>
-                                <a href="login.php" class="btn btn-primary">Añadir al carrito</a>
+                                <a href="login.php" class="btn btn-primary">Añadir al carrito</a><br>
+                                <a href="login.php" class="btn btn-dark mt-5">Calificar producto</a>
                             </form>
+                            
                             <?php else: ?>
                                 <p class="text-danger"><strong>Este producto ya no está disponible.</strong></p>
                             <?php endif; ?>
                         <?php endif; ?>
                     <!-- Sección de Reseñas -->
-                    <h2 class="my-4">Reseñas</h2>
+                    <h2 class="mb-4 mt-2">Reseñas</h2>
                     <?php if (empty($reviews)): ?>
                         <p>Aún no hay reseñas para este producto.</p>
                     <?php else: ?>

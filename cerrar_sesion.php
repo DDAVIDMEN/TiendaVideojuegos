@@ -30,33 +30,38 @@ session_destroy();
                         </a>
                     </li>
                     
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Categorías</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="accion.php">Acción</a></li>
-                            <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
-                            <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
-                            <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
-                            <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="oferta.php">Ofertas</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Exclusivos</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
-                            <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
-                            <li><a class="dropdown-item" href="switch.php">Switch</a></li>
-                            <li><a class="dropdown-item" href="pc.php">PC</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.php">Acerca de</a>
-                    </li>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Categorías</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="accion.php">Acción</a></li>
+                                <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
+                                <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
+                                <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
+                                <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="oferta.php">Ofertas</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Exclusivos</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
+                                <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
+                                <li><a class="dropdown-item" href="switch.php">Switch</a></li>
+                                <li><a class="dropdown-item" href="pc.php">PC</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">Acerca de</a>
+                        </li>
+                    </div>
                 </ul>
                 <form class="d-flex" action="buscar.php" method="GET">
                     <input class="form-control me-2" type="text" name="nombre" placeholder="Buscar">
