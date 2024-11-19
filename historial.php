@@ -61,6 +61,9 @@ mysqli_close($con);
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -127,11 +130,11 @@ mysqli_close($con);
                             </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                            <a class="nav-link dropdown-toggle active" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
-                                <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
+                                <li><a class="dropdown-item active" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
                         </li>
@@ -149,7 +152,7 @@ mysqli_close($con);
             <?php if (empty($historial)): ?>
                 <p class="text-center display-5">No hay historial disponible</p>
                 <div class="text-center">
-                    <a href="index.php" class="btn btn-primary mt-5 text-center">Volver al inicio</a>
+                    <a href="index.php" class="btn btn-primary mt-5 text-center">Volver al catálogo</a>
                 </div>
             <?php else: ?>
                 <?php foreach ($historial as $fecha => $productos): ?>

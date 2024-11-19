@@ -54,6 +54,9 @@ if (isset($_SESSION['user_id'])){
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -84,10 +87,10 @@ if (isset($_SESSION['user_id'])){
                         <!--Administracion -->
                         <?php if($admin['administrador'] ==1): ?>
                             <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                            <a class="nav-link dropdown-toggle active" href="#" role="button"
                                 data-bs-toggle="dropdown">Administrador</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="inventario.php">Inventario</a></li>
+                                <li><a class="dropdown-item active" href="inventario.php">Inventario</a></li>
                                 <li><a class="dropdown-item" href="nuevo_producto.php">Nuevo Producto</a></li>
                                 <li><a class="dropdown-item" href="modi_producto.php">Modificar Producto</a></li>
                                 <li><a class="dropdown-item" href="usuarios.php">Usuarios</a></li>
@@ -124,7 +127,7 @@ if (isset($_SESSION['user_id'])){
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>

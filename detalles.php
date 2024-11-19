@@ -95,6 +95,9 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -164,7 +167,7 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
@@ -179,7 +182,7 @@
         <?php if (!$game): ?>
             <div class='container my-5 text-center'>
                 <h2 class="display-5">Producto no encontrado</h2>
-                <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
+                <a href="index.php" class="btn btn-primary mt-5">Volver al catálogo</a>
             </div>
         <?php else: ?>
             <h1 class="my-4"><?php echo htmlspecialchars($game['nombre']); ?></h1>
@@ -232,6 +235,9 @@
                             <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
                             <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
                         </form>
+
+                        <a href="index.php" class="btn btn-secondary mt-3">Volver al catálogo</a>
+                        
                         <form action="resena.php" method="post">
                             <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
                             <button type="submit" class="btn btn-dark mt-5">Calificar producto</button>
@@ -259,7 +265,9 @@
                                 </div>
                                 <br>
                                 <a href="login.php" class="btn btn-primary">Añadir al carrito</a><br>
+                                <a href="index.php" class="btn btn-secondary mt-3">Volver al catálogo</a><br>
                                 <a href="login.php" class="btn btn-dark mt-5">Calificar producto</a>
+                                
                             </form>
                             
                             <?php else: ?>

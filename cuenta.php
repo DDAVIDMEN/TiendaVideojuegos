@@ -6,7 +6,7 @@ include("conexion.php");
 $user_id = $_SESSION['user_id'];
 
 // Consultar los datos del usuario
-$query = "SELECT nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal FROM usuarios WHERE id = $user_id";
+$query = "SELECT nombre, correo, contrasena, nacimiento, tarjeta, direccion, Codigo_Postal FROM usuarios WHERE id = $user_id";
 $result = mysqli_query($con, $query);
 
 // Comprobar si se encontraron datos para el usuario
@@ -16,6 +16,7 @@ if ($row = mysqli_fetch_assoc($result)) {
     $contra = htmlspecialchars($row['contrasena']);
     $nacimiento = htmlspecialchars($row['nacimiento']);
     $tarjeta = htmlspecialchars($row['tarjeta']);
+    $direccion = htmlspecialchars($row['direccion']);
     $codigo_postal = htmlspecialchars($row['Codigo_Postal']);
 } else {
     echo "<div class='alert alert-danger'>Error: Usuario no encontrado.</div>";
@@ -63,6 +64,9 @@ mysqli_close($con);
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -129,10 +133,10 @@ mysqli_close($con);
                             </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                            <a class="nav-link dropdown-toggle active" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item active" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
@@ -147,6 +151,7 @@ mysqli_close($con);
         <br>
         <div class="container my-2">
             <h1 class="display-4 my-3 text-center">Bienvenido, <?php echo $nombre; ?></h1> 
+            
             <h3><small><strong>Datos Personales:</strong></small>
                 <a  href="editar.php">
                     <img src="editar.jpg" alt="Game Logo" style="height: 30px;" class="rounded-pill">
@@ -156,10 +161,14 @@ mysqli_close($con);
             <p><strong>Contraseña:</strong> <?php echo $contra; ?></p>
             <p><strong>Fecha de Nacimiento:</strong> <?php echo $nacimiento; ?></p>
             <p><strong>Tarjeta:</strong> <?php echo $tarjeta; ?></p>
+            <p><strong>Dirección:</strong> <?php echo $direccion; ?></p>
             <p><strong>Código Postal:</strong> <?php echo $codigo_postal; ?></p>
             <div class="mt-4">
                 <a href="borrar_cuenta.php" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu cuenta?');">Eliminar Cuenta</a>
             </div>
+        </div>
+        <div class='text-center'>
+                <a href="index.php" class="btn btn-primary mb-5">Catálogo</a>
         </div>
     </div>
 </body>

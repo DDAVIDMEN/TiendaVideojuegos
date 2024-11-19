@@ -55,6 +55,9 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -70,12 +73,12 @@
                             <a class="nav-link" href="oferta.php">Ofertas</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                            <a class="nav-link dropdown-toggle active" href="#" role="button"
                                 data-bs-toggle="dropdown">Exclusivos</a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
                                 <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
-                                <li><a class="dropdown-item" href="switch.php">Switch</a></li>
+                                <li><a class="dropdown-item active" href="switch.php">Switch</a></li>
                                 <li><a class="dropdown-item" href="pc.php">PC</a></li>
                             </ul>
                         </li>
@@ -124,7 +127,7 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>

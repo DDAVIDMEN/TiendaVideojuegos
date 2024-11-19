@@ -54,6 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -95,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <a href="registro.php" class="nav-link">Crear cuenta</a>
                         </li>
                         <li class="nav-item">
-                            <a href="login.php" class="nav-link">Iniciar sesión</a>
+                            <a href="login.php" class="nav-link active">Iniciar sesión</a>
                         </li>
                     </ul>
                 <?php else: ?>

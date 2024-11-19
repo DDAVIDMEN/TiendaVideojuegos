@@ -1,37 +1,44 @@
 <?php
-    
-    include("conexion.php");
+include("conexion.php");
 
-    $nombre = $_GET['nombre'];
-    
+// Obtener el nombre de la búsqueda desde la URL
+$nombre = $_GET['nombre'] ?? '';
 
-    //Query
-    $query = "select id, fotos, nombre from productos where nombre = '$nombre';";
-    if (mysqli_connect_errno()) {
-        echo "<div class='alert alert-danger'>
-            <strong>Error!</strong>" . mysqli_connect_error() ."
-            </div>";
-    }
-
+// Validar si el nombre no está vacío
+if (!empty($nombre)) {
+    // Query para buscar el producto
+    $query = "SELECT id FROM productos WHERE nombre = '$nombre';";
     $result = mysqli_query($con, $query);
-    $buscar = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $buscar[] = $row;
-    }
-    mysqli_free_result($result);
 
-    //Admin 
-    if (isset($_SESSION['user_id'])){
-        $admin_id = $_SESSION['user_id'];
-        $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
-        $resultadmin = mysqli_query($con, $queryadmin);
-        $admin = mysqli_fetch_assoc($resultadmin);
-    }else{
-        $admin['administrador']=0;
-    }
+    if ($result && mysqli_num_rows($result) > 0) {
+        // Obtener el primer resultado
+        $row = mysqli_fetch_assoc($result);
+        $id = $row['id'];
 
-    
-    mysqli_close($con);
+        // Liberar el resultado y cerrar la conexión
+        mysqli_free_result($result);
+        mysqli_close($con);
+
+        // Redirigir a detalles.php con el ID del producto
+        header("Location: detalles.php?id=$id");
+        exit();
+    } else {
+        // Si no se encuentra nada, mostrar un mensaje
+        $mensaje = "No se encontró ningún producto con ese nombre.";
+    }
+} else {
+    $mensaje = "No se proporcionó ningún nombre para buscar.";
+}
+
+//Admin 
+if (isset($_SESSION['user_id'])){
+    $admin_id = $_SESSION['user_id'];
+    $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
+    $resultadmin = mysqli_query($con, $queryadmin);
+    $admin = mysqli_fetch_assoc($resultadmin);
+}else{
+    $admin['administrador'] = 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -60,35 +67,38 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Categorías</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="accion.php">Acción</a></li>
-                            <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
-                            <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
-                            <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
-                            <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="oferta.php">Ofertas</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Exclusivos</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
-                            <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
-                            <li><a class="dropdown-item" href="switch.php">Switch</a></li>
-                            <li><a class="dropdown-item" href="pc.php">PC</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.php">Acerca de</a>
-                    </li>
-                    <!--Administracion -->
-                    <?php if($admin['administrador'] ==1): ?>
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Categorías</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="accion.php">Acción</a></li>
+                                <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
+                                <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
+                                <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
+                                <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="oferta.php">Ofertas</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown">Exclusivos</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="play.php">PlayStation</a></li>
+                                <li><a class="dropdown-item" href="xbox.php">Xbox</a></li>
+                                <li><a class="dropdown-item" href="switch.php">Switch</a></li>
+                                <li><a class="dropdown-item" href="pc.php">PC</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">Acerca de</a>
+                        </li>
+                        <!--Administracion -->
+                        <?php if($admin['administrador'] ==1): ?>
                             <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Administrador</a>
@@ -117,7 +127,7 @@
                             <a href="login.php" class="nav-link">Iniciar sesión</a>
                         </li>
                     </ul>
-    
+                    
                 <?php else: ?>
                    
                     <ul class="navbar-nav">
@@ -130,7 +140,7 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
@@ -146,29 +156,13 @@
             <h1 class="display-1">D&D Games</h1>
         </div>
         <br>
-        <h2 class="my-2">Búsqueda:</h2>
-        <br>
-        <div class="container d-flex justify-content-center align-items-center">
-            <div class="row">
-                <?php
-                if (empty($buscar)) {
-                    echo '<p class="text-center">No se encontró ningún producto con ese nombre</p>';
-                } else {          
-                    foreach ($buscar as $bus):
-                        echo '<div class="text-center mb-4">';
-                        echo '<a href="detalles.php?id=' . $bus['id'] . '" class="text-decoration-none">';
-                        echo '<div class="d-flex flex-column align-items-center">'; // Contenedor para centrar
-                        echo '<img src="data:image/jpeg;base64,' . base64_encode($bus['fotos']) . '" alt="' . $bus['nombre'] . '" class="mb-2" width="200" height="300">';
-                        echo '<h5 class="text-body">' . htmlspecialchars($bus['nombre']) . '</h5>';
-                        echo '</div>';
-                        echo '</a>';
-                        echo '</div>';
-                    endforeach;
-                }
-                ?>
-            </div>
+        <h2 class="text-center mb-3">Búsqueda:</h2>
+        <div class="alert alert-danger text-center mt-2">
+            <?php echo htmlspecialchars($mensaje); ?>
         </div>
-
-    </div>
+        <div class="text-center">
+            <a href="index.php" class="btn btn-primary mt-4">Volver al catálogo</a>
+        </div>
+    
 </body>
 </html>

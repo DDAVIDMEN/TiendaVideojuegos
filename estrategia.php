@@ -53,13 +53,16 @@ if (isset($_SESSION['user_id'])){
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                            <a class="nav-link dropdown-toggle active" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="accion.php">Acción</a></li>
                                 <li><a class="dropdown-item" href="deportes.php">Deportes</a></li>
-                                <li><a class="dropdown-item" href="estrategia.php">Estrategia</a></li>
+                                <li><a class="dropdown-item active" href="estrategia.php">Estrategia</a></li>
                                 <li><a class="dropdown-item" href="role.php">Role-Play</a></li>
                                 <li><a class="dropdown-item" href="carreras.php">Carreras</a></li>
                             </ul>
@@ -122,7 +125,7 @@ if (isset($_SESSION['user_id'])){
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>

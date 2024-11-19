@@ -2,7 +2,7 @@
 include("conexion.php");
 
 $error = "";
-$nombre = $correo = $contra = $naci = $tarjeta = $postal = ""; // Inicializar las variables
+$nombre = $correo = $contra = $naci = $tarjeta = $direccion = $postal = ""; // Inicializar las variables
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Escapar y almacenar los datos del formulario
@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contra = mysqli_real_escape_string($con, $_POST['contra']);
     $naci = mysqli_real_escape_string($con, $_POST['naci']);
     $tarjeta = mysqli_real_escape_string($con, $_POST['tarjeta']);
+    $direccion = mysqli_real_escape_string($con, $_POST['direccion']);
     $postal = mysqli_real_escape_string($con, $_POST['postal']);
 
     // Verificar si el correo ya existe en la base de datos
@@ -22,8 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Ya existe un usuario registrado con este correo. Intente con otro";
     } else {
         // Si el correo no existe, insertar los datos del usuario
-        $insert_query = "INSERT INTO usuarios (nombre, correo, contrasena, nacimiento, tarjeta, Codigo_Postal) 
-                         VALUES ('$nombre', '$correo', '$contra', '$naci', '$tarjeta', '$postal')";
+        $insert_query = "INSERT INTO usuarios (nombre, correo, contrasena, nacimiento, tarjeta, direccion, Codigo_Postal) 
+                         VALUES ('$nombre', '$correo', '$contra', '$naci', '$tarjeta','$direccion', '$postal')";
 
         if (mysqli_query($con, $insert_query)) {
             // Obtén el ID del usuario recién insertado
@@ -73,6 +74,9 @@ mysqli_close($con);
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -111,7 +115,7 @@ mysqli_close($con);
                 <?php if (!isset($_SESSION['user_id'])): ?>
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a href="registro.php" class="nav-link">Crear cuenta</a>
+                            <a href="registro.php" class="nav-link active">Crear cuenta</a>
                         </li>
                         <li class="nav-item">
                             <a href="login.php" class="nav-link">Iniciar sesión</a>
@@ -129,7 +133,7 @@ mysqli_close($con);
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
@@ -174,6 +178,10 @@ mysqli_close($con);
             <div class="mb-3 mt-3">
                 <label for="tarjeta" class="form-label">Tarjeta:</label>
                 <input type="number" class="form-control" id="tarjeta" placeholder="16 dígitos" name="tarjeta" required value="<?php echo htmlspecialchars($tarjeta); ?>">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="direccion" class="form-label">Dirección:</label>
+                <input type="text" class="form-control" id="direccion" placeholder="Ingresa tu dirección" name="direccion" required value="<?php echo htmlspecialchars($direccion); ?>">
             </div>
             <div class="mb-3 mt-3">
                 <label for="postal" class="form-label">Código Postal:</label>

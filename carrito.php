@@ -48,11 +48,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    function confirmarCompra() {
-        return confirm("¿Seguro quieres realizar la compra?");
-    }
-</script>
 </head>
 <body>
     <!--Contenedor principal de BS5-->
@@ -70,6 +65,9 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                        <li class="nav-item">
+                            <a href="index.php" class="nav-link">Catálogo</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Categorías</a>
@@ -131,7 +129,7 @@
 
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="navbar-brand" href="carrito.php">
+                            <a class="navbar-brand active" href="carrito.php">
                                 <img src="carrito.png" alt="Game Logo" style="width: 40px;" class="rounded-pill">
                             </a>
                         </li>
@@ -139,7 +137,7 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">Mi cuenta</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="cuenta.php">Configuración</a></li>
+                                <li><a class="dropdown-item" href="cuenta.php">Detalles de Mi cuenta</a></li>
                                 <li><a class="dropdown-item" href="historial.php">Historial de Pedidos</a></li>
                                 <li><a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a></li>
                             </ul>
@@ -164,7 +162,7 @@
                 if (empty($carrito)) {
                     echo '<p class="display-5 text-center">El carrito está vacío</p>';
                     echo '<div class="text-center">';
-                    echo '<a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a></div';
+                    echo '<a href="index.php" class="btn btn-primary mt-5">Volver al catálogo</a></div';
                 } else {
                     foreach ($carrito as $car):
                         $subtotal = $car['precio'] * $car['cantidad']; // Calcula el subtotal del producto
@@ -199,7 +197,7 @@
                     }else{
                         echo '        <h4 class="text-end">Total ('. $cantproductos . ' producto): $' .  $total . '</h4>'; 
                     }
-                    echo '        <a href="compra.php" class="btn btn-success mt-2 text-end" onclick="return confirmarCompra();">Comprar</a>'; // Botón para ir a compra.php
+                    echo '        <a href="conf_compra.php" class="btn btn-success mt-2 text-end">Comprar</a>'; // Botón para ir a compra.php
                     echo '    </div>';
                     echo '</div>';
                 }
