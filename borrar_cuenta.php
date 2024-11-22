@@ -164,11 +164,12 @@ mysqli_close($con);
             <h1 class="display-1 ">D&D Games</h1>
         </div>
         <br>
-        <div class='mt-4 p-5 text-center'>
-            <h1 class='display-1 '>¡Cuenta Borrada con Éxito!</h1>
-            <p>Esperamos que vuelvas pronto</p>
-            <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
- 
+        <div class="alert alert-success text-center">
+                <strong class="display-1">¡Cuenta Borrada con Éxito!</strong><br>
+                <p>Esperamos que vuelvas pronto</p>
+            </div>
+        <div class='mt-1 p-5 text-center'>
+            <a href="index.php" class="btn btn-primary">Volver al inicio</a>
         </div>
     </div>
 

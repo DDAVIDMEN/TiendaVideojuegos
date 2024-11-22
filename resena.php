@@ -145,7 +145,7 @@ mysqli_close($con);
                         alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="520" height="650">
                 </div>
                 <div class="col-md-6">
-                    <form action="nueva_resena.php" method="POST">
+                    <form action="nueva_resena.php" method="POST" id="resenaForm">
                         <input type="hidden" name="producto_id" value="<?php echo $producto_id; ?>">
                         <div class="d-flex align-items-center">
                             <label for="calificacion" class="form-label fs-5 me-2"><strong>Calificación (1-10):</strong></label>
@@ -153,9 +153,48 @@ mysqli_close($con);
                         </div>
                         <label for="comentario" class="form-label fs-5"><strong>Comentarios:</strong></label>
                         <textarea class="form-control" id="comentario" name="comentario" rows="4" maxlength="600" required></textarea>
-                        <button type="submit" class="btn btn-primary mt-5">Enviar Reseña</button>
+                        <button type="submit" class="btn btn-primary mt-5" id="resenaButton">Enviar Reseña</button>
                         <a href="detalles.php?id=<?php echo $producto_id; ?>" class="btn btn-danger mt-5">Cancelar</a>
                     </form>
+
+                     <!-- Modal de confirmación -->
+                     <div class="modal fade" id="resenaModal" tabindex="-1" aria-labelledby="resenaModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content text-center">
+                            <div class="modal-header bg-success d-flex justify-content-center">
+                                <h5 class="modal-title" id="addToCartModalLabel"><strong class="text-light">¡Reseña Exitosa!</strong></h5>
+                            </div>
+                            <div class="modal-body text-center">
+                                <strong> Reseña publicada.</strong>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        // Escuchar el clic en el botón "Enviar Reseña"
+                        document.getElementById('resenaButton').addEventListener('click', function(event) {
+                            event.preventDefault(); // Evitar el envío inmediato del formulario
+
+                            var form = document.getElementById('resenaForm');
+                            
+                            // Validar manualmente el formulario
+                            if (form.checkValidity()) {
+                                // Mostrar el modal si los campos son válidos
+                                var modal = new bootstrap.Modal(document.getElementById('resenaModal'), {});
+                                modal.show();
+
+                                // Esperar 3 segundos y enviar el formulario
+                                setTimeout(function() {
+                                    form.submit();
+                                }, 3000);
+                            } else {
+                                // Si no es válido, mostrar mensajes de error nativos de HTML5
+                                form.reportValidity();
+                            }
+                        });
+                    </script>
+
                 </div>
             </div>
         <?php endif; ?>

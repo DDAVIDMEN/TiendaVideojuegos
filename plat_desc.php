@@ -1,7 +1,7 @@
 <?php
 include("conexion.php");
 
-$error = "";
+
 $producto_reciente = null;
 $plataformas = [];
 
@@ -23,38 +23,7 @@ if ($result_plataformas) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $producto_id = mysqli_real_escape_string($con, $_POST['producto']);
-    $plataformas_seleccionadas = $_POST['plataformas']; // Array de plataformas seleccionadas
-    $descuento = mysqli_real_escape_string($con, $_POST['descuento']);
-    $fecha_inicial = mysqli_real_escape_string($con, $_POST['fecha_inicial']);
-    $fecha_final = mysqli_real_escape_string($con, $_POST['fecha_final']);
 
-    // Insertar las plataformas relacionadas con el producto
-    foreach ($plataformas_seleccionadas as $plataforma_id) {
-        $query_producto_plataforma = "INSERT INTO producto_plataforma (Producto, Plataforma) VALUES ('$producto_id', '$plataforma_id')";
-        if (!mysqli_query($con, $query_producto_plataforma)) {
-            $error = "Error al asignar plataformas al producto.";
-        }
-    }
-
-    // Si hay un descuento, agregarlo a la tabla promociones
-    if (!empty($descuento)) {
-        $query_promocion = "INSERT INTO promociones (Producto, Descuento, Fecha_Inicial, Fecha_Final) 
-                            VALUES ('$producto_id', '$descuento', '$fecha_inicial', '$fecha_final')";
-        if (!mysqli_query($con, $query_promocion)) {
-            $error = "Error al registrar la promoción.";
-        }
-    }
-
-    // Redirigir o mostrar un mensaje de éxito
-    if (empty($error)) {
-        echo "<script>
-                alert('Producto añadido correctamente');
-                window.location.href = 'index.php';
-            </script>";
-    }
-}
 
 //Admin 
 if (isset($_SESSION['user_id'])){
@@ -209,7 +178,7 @@ mysqli_close($con);
             <div class="alert alert-danger text-center"><?php echo $error; ?></div>
         <?php endif; ?>
 
-        <form action="plat_desc.php" method="post" onsubmit="return validateForm(event)">
+        <form action="new_product.php" id="nuevouserForm" method="post" onsubmit="return validateForm(event)">
             <div class="mb-3">
                 <label for="producto" class="form-label">Producto:</label>
                 <select class="form-control" id="producto" name="producto" required>
@@ -233,6 +202,9 @@ mysqli_close($con);
                 <label for="descuento" class="form-label">Descuento (%):</label>
                 <input type="number" class="form-control" id="descuento" name="descuento" min="0" max="100" placeholder="Deje vacío si no hay descuento">
             </div>
+
+            <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
+
             <div class="mb-3">
                 <label for="fecha_inicial" class="form-label">Fecha Inicial:</label>
                 <input type="date" class="form-control" id="fecha_inicial" name="fecha_inicial">
@@ -242,9 +214,62 @@ mysqli_close($con);
                 <input type="date" class="form-control" id="fecha_final" name="fecha_final">
             </div>
             <div class="my-3">
-                <button type="submit" class="btn btn-primary w-100">Agregar Producto</button>
+                <button type="submit" class="btn btn-primary w-100" id="nuevouserButton">Agregar Producto</button>
             </div>
         </form>
+        <!-- Modal de confirmación -->
+        <div class="modal fade" id="nuevouserModal" tabindex="-1" aria-labelledby="nuevouserModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-success d-flex justify-content-center">
+                <h5 class="modal-title" id="nuevouserModalLabel"><strong class="text-light">Añadido Exitoso</strong></h5>
+            </div>
+            <div class="modal-body text-center">
+                <strong> Producto Añadido Correctamente</strong>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <script>
+            document.getElementById('nuevouserButton').addEventListener('click', function (event) {
+                event.preventDefault();
+                
+                var form = document.getElementById('nuevouserForm');
+                if (form.checkValidity() && ValidarFechas(event)) {
+                    // Mostrar el modal si la validación pasa
+                    var modal = new bootstrap.Modal(document.getElementById('nuevouserModal'), {});
+                    modal.show();
+
+                    // Esperar y luego enviar el formulario
+                    setTimeout(function () {
+                        form.submit();
+                    }, 2000);
+                } else {
+                    // Mostrar errores de validación
+                    form.reportValidity();
+                }
+            });
+
+            function ValidarFechas(event) {
+                const errorMessage = document.getElementById("error-message");
+                const descuento = document.getElementById("descuento").value;
+                const fechaInicial = document.getElementById("fecha_inicial").value;
+                const fechaFinal = document.getElementById("fecha_final").value;
+
+                // Limpiar mensaje de error previo
+                errorMessage.style.display = "none";
+                errorMessage.innerText = "";
+
+                if (descuento && (!fechaInicial || !fechaFinal)) {
+                    // Mostrar mensaje de error
+                    errorMessage.innerText = "Si hay descuento, debes ingresar la fecha inicial y final.";
+                    errorMessage.style.display = "block"; // Hacerlo visible
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </div>
 </body>
 </html>

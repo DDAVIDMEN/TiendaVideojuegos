@@ -12,7 +12,6 @@
     VALUES ($user_id, $producto_id, $calificacion, '$comentario', '$fecha')";
     if (mysqli_query($con, $insert_query)) {
         echo "<script>
-            alert('Reseña publicada');
             window.location.href = 'detalles.php?id=$producto_id';
         </script>";
     } else {

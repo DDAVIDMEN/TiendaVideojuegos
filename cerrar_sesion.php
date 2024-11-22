@@ -106,8 +106,10 @@ session_destroy();
             <h1 class="display-1 ">D&D Games</h1>
         </div>
         <br>
+        <div class="alert alert-info text-center">
+            <strong class="display-1">¡Sesión Cerrada!</strong><br>        
+        </div>
         <div class='text-center'>
-            <h1 class='display-1 '>Sesión Cerrada</h1>
             <a href="index.php" class="btn btn-primary mt-5">Volver al inicio</a>
         </div>
     </div>

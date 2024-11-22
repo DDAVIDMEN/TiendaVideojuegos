@@ -1,7 +1,7 @@
 <?php
 include("conexion.php");
 
-$error = "";
+
 $productos = [];
 $categorias = [];
 $plataformas = [];
@@ -57,86 +57,7 @@ if (isset($_POST['producto_seleccionado'])) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar_producto'])) {
-    $producto_id = mysqli_real_escape_string($con, $_POST['producto']);
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $descripcion = mysqli_real_escape_string($con, $_POST['descripcion']);
-    $precio = mysqli_real_escape_string($con, $_POST['precio']);
-    $cantidad_almacen = mysqli_real_escape_string($con, $_POST['cantidad_almacen']);
-    $desarrollador = mysqli_real_escape_string($con, $_POST['desarrollador']);
-    $origen = mysqli_real_escape_string($con, $_POST['origen']);
-    $categoria = mysqli_real_escape_string($con, $_POST['categoria']);
-    $plataformas_seleccionadas = $_POST['plataformas'];
-    $descuento = mysqli_real_escape_string($con, $_POST['descuento']);
-    $fecha_inicial = mysqli_real_escape_string($con, $_POST['fecha_inicial']);
-    $fecha_final = mysqli_real_escape_string($con, $_POST['fecha_final']);
-    
-    // Actualizar información del producto
-    $query_update_producto = "UPDATE productos SET 
-                                Nombre = '$nombre', 
-                                Descripcion = '$descripcion', 
-                                Precio = '$precio', 
-                                Cantidad_almacen = '$cantidad_almacen', 
-                                Desarrollador = '$desarrollador', 
-                                Origen = '$origen', 
-                                Categoria = '$categoria' 
-                              WHERE ID = '$producto_id'";
-    if (!mysqli_query($con, $query_update_producto)) {
-        $error = "Error al actualizar el producto.";
-    }
-    
-    // Actualizar plataformas asociadas al producto
-    $query_delete_plataformas = "DELETE FROM producto_plataforma WHERE Producto = '$producto_id'";
-    mysqli_query($con, $query_delete_plataformas);
-    
-    foreach ($plataformas_seleccionadas as $plataforma_id) {
-        $query_insert_plataforma = "INSERT INTO producto_plataforma (Producto, Plataforma) VALUES ('$producto_id', '$plataforma_id')";
-        if (!mysqli_query($con, $query_insert_plataforma)) {
-            $error = "Error al actualizar plataformas.";
-        }
-    }
-    
-    // Actualizar o insertar promoción
-    // Manejo de promoción
-    if (!empty($descuento)) {
-        // Verificar si ya existe una promoción para este producto
-        $query_promocion_existente = "SELECT * FROM promociones WHERE Producto = '$producto_id'";
-        $result_promocion_existente = mysqli_query($con, $query_promocion_existente);
 
-        if (mysqli_num_rows($result_promocion_existente) > 0) {
-            // Si la promoción ya existe, actualizarla
-            $query_update_promocion = "UPDATE promociones SET 
-                                        Descuento = '$descuento', 
-                                        Fecha_Inicial = '$fecha_inicial', 
-                                        Fecha_Final = '$fecha_final' 
-                                    WHERE Producto = '$producto_id'";
-            if (!mysqli_query($con, $query_update_promocion)) {
-                $error = "Error al actualizar la promoción.";
-            }
-        } else {
-            // Si no existe, insertar una nueva promoción
-            $query_insert_promocion = "INSERT INTO promociones (Producto, Descuento, Fecha_Inicial, Fecha_Final) 
-                                    VALUES ('$producto_id', '$descuento', '$fecha_inicial', '$fecha_final')";
-            if (!mysqli_query($con, $query_insert_promocion)) {
-                $error = "Error al registrar la promoción.";
-            }
-        }
-    } else {
-        // Si no hay descuento, eliminar cualquier promoción existente para este producto
-        $query_delete_promocion = "DELETE FROM promociones WHERE Producto = '$producto_id'";
-        if (!mysqli_query($con, $query_delete_promocion)) {
-            $error = "Error al eliminar la promoción.";
-        }
-    }
-
-
-    if (empty($error)) {
-        echo "<script>
-                alert('Producto actualizado correctamente');
-                window.location.href = 'index.php';
-            </script>";
-    }
-}
 //Admin 
 if (isset($_SESSION['user_id'])){
     $admin_id = $_SESSION['user_id'];
@@ -159,23 +80,6 @@ if (isset($_SESSION['user_id'])){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function ValidarFechas(event) {
-            const descuento = document.getElementById("descuento").value;
-            const fechaInicial = document.getElementById("fecha_inicial").value;
-            const fechaFinal = document.getElementById("fecha_final").value;
-
-            if (descuento) { // Si hay descuento ingresado
-                if (!fechaInicial || !fechaFinal) { // Validar que las fechas no estén vacías
-                    alert("Si hay descuento, debes ingresar la fecha inicial y final.");
-                    event.preventDefault(); // Prevenir el envío del formulario
-                    return false;
-                }
-            }
-
-            return true; // Permitir el envío si todo es válido
-        }
-    </script>
 </head>
 <body>
 <div class="container">
@@ -303,7 +207,7 @@ if (isset($_SESSION['user_id'])){
 
         <?php if ($producto_seleccionado): ?>
             <!-- Formulario para modificar el producto -->
-            <form method="post" onsubmit="return ValidarFechas(event)">
+            <form method="post" id="actualizarForm" action="update_producto.php" onsubmit="return ValidarFechas(event)">
                 <input type="hidden" name="producto" value="<?php echo $producto_seleccionado['ID']; ?>">
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre:</label>
@@ -355,8 +259,9 @@ if (isset($_SESSION['user_id'])){
                 </div>
                 <div class="mb-3">
                     <label for="descuento" class="form-label">Descuento (%):</label>
-                    <input type="number" class="form-control" id="descuento" name="descuento" value="<?php echo $promocion['Descuento'] ?? ''; ?>" placeholder="Deje vacío si no hay descuento">
+                    <input type="number" class="form-control" id="descuento" name="descuento" value="<?php echo $promocion['Descuento'] ?? ''; ?>" placeholder="Deje vacío si no hay descuento" max="100">
                 </div>
+                <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
                 <div class="mb-3">
                     <label for="fecha_inicial" class="form-label">Fecha Inicial:</label>
                     <input type="date" class="form-control w-25" id="fecha_inicial" name="fecha_inicial" value="<?php echo $promocion['Fecha_Inicial'] ?? ''; ?>">
@@ -366,9 +271,63 @@ if (isset($_SESSION['user_id'])){
                     <input type="date" class="form-control w-25" id="fecha_final" name="fecha_final" value="<?php echo $promocion['Fecha_Final'] ?? ''; ?>">
                 </div>
                 <div class="my-5">
-                    <button type="submit" class="btn btn-primary w-100" name="actualizar_producto">Actualizar Producto</button>
+                    <button type="submit" class="btn btn-primary w-100" id="actualizarButton" name="actualizar_producto">Actualizar Producto</button>
                 </div>
             </form>
+           <!-- Modal de confirmación -->
+        <div class="modal fade" id="actualizarModal" tabindex="-1" aria-labelledby="actualizarModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-primary d-flex justify-content-center">
+                <h5 class="modal-title" id="actualizarModalLabel"><strong class="text-light">Actualización Exitosa</strong></h5>
+            </div>
+            <div class="modal-body text-center">
+                <strong> Producto Actualizado.</strong>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <script>
+            document.getElementById('actualizarButton').addEventListener('click', function (event) {
+                event.preventDefault();
+                
+                var form = document.getElementById('actualizarForm');
+                if (form.checkValidity() && ValidarFechas(event)) {
+                    // Mostrar el modal si la validación pasa
+                    var modal = new bootstrap.Modal(document.getElementById('actualizarModal'), {});
+                    modal.show();
+
+                    // Esperar y luego enviar el formulario
+                    setTimeout(function () {
+                        form.submit();
+                    }, 2000);
+                } else {
+                    // Mostrar errores de validación
+                    form.reportValidity();
+                }
+            });
+
+            function ValidarFechas(event) {
+                const errorMessage = document.getElementById("error-message");
+                const descuento = document.getElementById("descuento").value;
+                const fechaInicial = document.getElementById("fecha_inicial").value;
+                const fechaFinal = document.getElementById("fecha_final").value;
+
+                // Limpiar mensaje de error previo
+                errorMessage.style.display = "none";
+                errorMessage.innerText = "";
+
+                if (descuento && (!fechaInicial || !fechaFinal)) {
+                    // Mostrar mensaje de error
+                    errorMessage.innerText = "Si hay descuento, debes ingresar la fecha inicial y final.";
+                    errorMessage.style.display = "block"; // Hacerlo visible
+                    return false;
+                }
+                return true;
+            }
+        </script>
+
         <?php endif; ?>
     </div>
 </body>

@@ -22,10 +22,13 @@
                                  SET cantidad_almacen = cantidad_almacen + $cantidad 
                                  WHERE id = $producto_id";
         if (mysqli_query($con, $query_actualizar)) {
-            echo "<script>
-                alert('Producto eliminado del carrito correctamente');
-                window.location.href = 'carrito.php';
-            </script>";
+            echo "  
+                <script>
+                    setTimeout(function() {
+                        window.location.href = 'carrito.php'; 
+                    }); 
+                
+                </script>";
         }else {
             echo "Error al actualizar el inventario del producto.";
         }  
@@ -45,3 +48,14 @@ if (isset($_SESSION['user_id'])){
 
     mysqli_close($con);
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto actualizado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+</html>

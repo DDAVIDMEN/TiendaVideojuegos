@@ -226,10 +226,41 @@ mysqli_close($con);
         ?>
 
         <!-- Botón para confirmar compra -->
+    
         <div class="text-end my-4">
             <a href="carrito.php" class="btn btn-danger">Cancelar Compra</a>
-            <a href="compra.php" class="btn btn-success">Confirmar Compra</a>
+            <button class="btn btn-success" id="confirmarCompraButton">Confirmar Compra</button>
         </div>
+
+        <!-- Modal de Confirmación -->
+        <div class="modal fade" id="compraExitosaModal" tabindex="-1" aria-labelledby="compraExitosaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success">
+                        <h5 class="modal-title text-light" id="compraExitosaLabel">¡Compra Exitosa!</h5>
+                    </div>
+                    <div class="modal-body">
+                        <strong> ¡Gracias por tu compra! Tu pedido ha sido confirmado.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Escuchar el clic en el botón "Confirmar Compra"
+            document.getElementById('confirmarCompraButton').addEventListener('click', function() {
+                // Mostrar el modal
+                var modal = new bootstrap.Modal(document.getElementById('compraExitosaModal'), {});
+                modal.show();
+
+                // Ocultar el modal automáticamente después de 3 segundos
+                setTimeout(function() {
+                    modal.hide();
+                    window.location.href = 'compra.php';
+                }, 4000);
+            });
+        </script>
+
         </div>
     </div>
 </body>

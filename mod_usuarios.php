@@ -1,11 +1,11 @@
 <?php
 include("conexion.php");
 
-$error = "";
+
 $usuarios = [];
 $usuario_seleccionado = null;
 
-// Obtener todos los correos electrónicos de la tabla `usuarios`
+// Obtener todos los correos electrónicos de la tabla usuarios
 $query_usuarios = "SELECT ID, Correo FROM usuarios";
 $result_usuarios = mysqli_query($con, $query_usuarios);
 
@@ -27,38 +27,7 @@ if (isset($_POST['correo_seleccionado'])) {
     }
 }
 
-// Manejar la actualización del usuario
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar_usuario'])) {
-    $usuario_id = mysqli_real_escape_string($con, $_POST['usuario']);
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $correo = mysqli_real_escape_string($con, $_POST['correo']);
-    $nacimiento = mysqli_real_escape_string($con, $_POST['nacimiento']);
-    $tarjeta = mysqli_real_escape_string($con, $_POST['tarjeta']);
-    $direccion = mysqli_real_escape_string($con, $_POST['direccion']);
-    $codigo_postal = mysqli_real_escape_string($con, $_POST['codigo_postal']);
-    $administrador = isset($_POST['administrador']) ? 1 : 0;
 
-    // Actualizar información del usuario
-    $query_update_usuario = "UPDATE usuarios SET 
-                                Nombre = '$nombre', 
-                                Correo = '$correo', 
-                                Nacimiento = '$nacimiento', 
-                                Tarjeta = '$tarjeta', 
-                                Direccion = '$direccion', 
-                                Codigo_Postal = '$codigo_postal', 
-                                Administrador = '$administrador'
-                              WHERE ID = '$usuario_id'";
-    if (!mysqli_query($con, $query_update_usuario)) {
-        $error = "Error al actualizar el usuario.";
-    }
-
-    if (empty($error)) {
-        echo "<script>
-                alert('Usuario actualizado correctamente');
-                window.location.href = 'usuarios.php';
-            </script>";
-    }
-}
 
 //Admin 
 if (isset($_SESSION['user_id'])){
@@ -189,9 +158,6 @@ if (isset($_SESSION['user_id'])){
         <br>
     <h2 class="my-3">Modificar Usuario</h2>
 
-    <?php if (!empty($error)): ?>
-        <div class="alert alert-danger"><?php echo $error; ?></div>
-    <?php endif; ?>
 
     <!-- Formulario para seleccionar el correo -->
     <form method="post">
@@ -210,7 +176,7 @@ if (isset($_SESSION['user_id'])){
 
     <?php if ($usuario_seleccionado): ?>
         <!-- Formulario para modificar el usuario -->
-        <form method="post">
+        <form method="post" id="actualizarForm" action="update_usuarios.php">
             <input type="hidden" name="usuario" value="<?php echo $usuario_seleccionado['ID']; ?>">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
@@ -219,6 +185,10 @@ if (isset($_SESSION['user_id'])){
             <div class="mb-3">
                 <label for="correo" class="form-label">Correo:</label>
                 <input type="email" class="form-control" id="correo" name="correo" value="<?php echo $usuario_seleccionado['Correo']; ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="contra" class="form-label">Contraseña:</label>
+                <input type="text" class="form-control" id="contra" name="contra" value="<?php echo $usuario_seleccionado['Contrasena']; ?>" required>
             </div>
             <div class="mb-3">
                 <label for="nacimiento" class="form-label">Fecha de Nacimiento:</label>
@@ -241,9 +211,41 @@ if (isset($_SESSION['user_id'])){
                 <input type="checkbox" id="administrador" name="administrador" value="1" <?php echo ($usuario_seleccionado['Administrador'] == 1) ? 'checked' : ''; ?>>
             </div>
             <div class="my-5">
-                <button type="submit" class="btn btn-primary w-100" name="actualizar_usuario">Actualizar Usuario</button>
+                <button type="submit" id="actualizarButton" class="btn btn-primary w-100" name="actualizar_usuario">Actualizar Usuario</button>
             </div>
         </form>
+        <!-- Modal de confirmación -->
+        <div class="modal fade" id="actualizarModal" tabindex="-1" aria-labelledby="actualizarModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-primary d-flex justify-content-center">
+                <h5 class="modal-title" id="actualizarModalLabel"><strong class="text-light">Actualización Exitosa</strong></h5>
+            </div>
+            <div class="modal-body text-center">
+                <strong> Usuario Actualizado.</strong>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <script>
+        // Escuchar el clic en el botón 
+        document.getElementById('actualizarButton').addEventListener('click', function() {
+            event.preventDefault();
+            var form = document.getElementById('actualizarForm');
+            
+            // Mostrar el modal
+            var modal = new bootstrap.Modal(document.getElementById('actualizarModal'), {});
+            modal.show();
+
+            // Esperar 3 segundos y enviar el formulario
+            setTimeout(function() {
+            form.submit();
+            }, 2000);
+        });
+        </script>
+
+
     <?php endif; ?>
 </div>
 </body>

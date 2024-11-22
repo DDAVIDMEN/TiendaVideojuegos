@@ -164,7 +164,27 @@ mysqli_close($con);
             <p><strong>Dirección:</strong> <?php echo $direccion; ?></p>
             <p><strong>Código Postal:</strong> <?php echo $codigo_postal; ?></p>
             <div class="mt-4">
-                <a href="borrar_cuenta.php" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu cuenta?');">Eliminar Cuenta</a>
+                <!-- Botón que abre el modal -->
+                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Eliminar Cuenta</a>
+            </div>
+
+            <!-- Modal de confirmación -->
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header bg-dark d-flex justify-content-center">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel"><strong class="text-light"> Confirmar eliminación</strong></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <strong>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="borrar_cuenta.php" class="btn btn-danger">Eliminar Cuenta</a>
+                </div>
+                </div>
+            </div>
             </div>
         </div>
         <div class='text-center'>

@@ -216,25 +216,65 @@
                     <!-- Formulario para añadir al carrito -->
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <?php if ($game['cantidad_almacen'] > 0): ?>
-                        <form action="ana_carrito.php" method="post">
-                            <div class="btn-group" role="group" aria-label="Plataformas">
-                                <?php foreach ($platforms as $index => $platform): ?>
-                                    <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
-                                    <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
-                                        <?php echo htmlspecialchars($platform); ?>
-                                    </label>
-                                <?php endforeach; ?>
+                            <form id="addToCartForm" action="ana_carrito.php" method="post">
+                                <div class="btn-group" role="group" aria-label="Plataformas">
+                                    <?php foreach ($platforms as $index => $platform): ?>
+                                        <input type="radio" class="btn-check" name="plataforma" id="plataforma<?php echo $index; ?>" value="<?php echo htmlspecialchars($platform); ?>" required>
+                                        <label class="btn btn-outline-secondary" for="plataforma<?php echo $index; ?>">
+                                            <?php echo htmlspecialchars($platform); ?>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <br><br>
+                                <div class="d-flex align-items-center">
+                                    <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="0" min="1" style="width: 60px;" required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
+                                </div>
+                                <!-- Campos ocultos para enviar id y precio -->
+                                <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
+                                <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
+                                <button type="submit" class="btn btn-primary mt-3" id="addToCartButton">Añadir al carrito</button>
+                            </form>
+
+                            <!-- Modal de confirmación -->
+                            <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content text-center">
+                                <div class="modal-header bg-success d-flex justify-content-center">
+                                    <h5 class="modal-title" id="addToCartModalLabel"><strong class="text-light">¡Añadido Exitoso!</strong></h5>
+                                </div>
+                                <div class="modal-body">
+                                    <strong> Producto añadido al carrito.</strong>
+                                </div>
+                                </div>
                             </div>
-                            <br><br>
-                            <div class="d-flex align-items-center">
-                                <label for="cantidad" class="form-label me-2"><strong>Cantidad:</strong></label>
-                                <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="0" min="1" style="width: 60px;"  required max="<?php echo htmlspecialchars($game['cantidad_almacen']); ?>">
                             </div>
-                            <!-- Campos ocultos para enviar id y precio -->
-                            <input type="hidden" name="producto_id" value="<?php echo $id; ?>">
-                            <input type="hidden" name="precio" value="<?php echo isset($precio_descuento) ? $precio_descuento : $game['precio']; ?>">
-                            <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
-                        </form>
+
+                            <script>
+                                // Escuchar el clic en el botón "Añadir al carrito"
+                                document.getElementById('addToCartButton').addEventListener('click', function(event) {
+                                    event.preventDefault(); // Evitar el envío inmediato del formulario
+
+                                    var form = document.getElementById('addToCartForm');
+
+                                    // Validar manualmente el formulario
+                                    if (form.checkValidity()) {
+                                        // Mostrar el modal si los campos son válidos
+                                        var modal = new bootstrap.Modal(document.getElementById('addToCartModal'), {});
+                                        modal.show();
+
+                                        // Esperar 3 segundos y enviar el formulario
+                                        setTimeout(function() {
+                                            form.submit();
+                                        }, 3000);
+                                    } else {
+                                        // Si el formulario no es válido, mostrar mensajes de error nativos de HTML5
+                                        form.reportValidity();
+                                    }
+                                });
+                            </script>
+
+
 
                         <a href="index.php" class="btn btn-secondary mt-3">Volver al catálogo</a>
                         

@@ -70,7 +70,6 @@ mysqli_close($con);
     <script>
         // Función para mostrar el mensaje de éxito y redirigir
         function showSuccessMessage() {
-            alert("Los datos se actualizaron correctamente.");
             setTimeout(function() {
                 window.location.href = "cuenta.php"; // Redirigir a cuenta.php después del mensaje
             }); 
@@ -182,7 +181,7 @@ mysqli_close($con);
         <br>
 
         <!-- Formulario para editar usuario -->
-        <form method="POST" action="editar.php">
+        <form method="POST" action="editar.php" id="editarForm">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $nom; ?>" required>
@@ -218,10 +217,39 @@ mysqli_close($con);
                 <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?php echo $cod ?>" required>
             </div>
 
-            <button type="submit" class="btn btn-primary mb-4 w-100">Actualizar</button>
+            <button type="submit" class="btn btn-primary mb-4 w-100" id="editarButton">Actualizar</button>
         </form>
 
-        <!-- Si la actualización fue exitosa, mostramos el mensaje emergente -->
+         <!-- Modal de confirmación -->
+         <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="editarLabel"><strong class="text-light">Cambios Guardados</strong></h5>
+                </div>
+                <div class="modal-body">
+                    <strong>Los datos se actualizaron correctamente.</strong>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <script>
+            // Escuchar el clic en el botón "Añadir al carrito"
+            document.getElementById('editarButton').addEventListener('click', function() {
+                event.preventDefault()
+                var form = document.getElementById('editarForm');
+                
+                // Mostrar el modal
+                var modal = new bootstrap.Modal(document.getElementById('editarModal'), {});
+                modal.show();
+
+                // Esperar 3 segundos y enviar el formulario
+                setTimeout(function() {
+                form.submit();
+                }, 3000);
+            });
+            </script>
         <?php if (isset($success) && $success): ?>
             <script>
                 showSuccessMessage(); // Llamar a la función para mostrar el mensaje
