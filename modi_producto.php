@@ -207,7 +207,7 @@ if (isset($_SESSION['user_id'])){
 
         <?php if ($producto_seleccionado): ?>
             <!-- Formulario para modificar el producto -->
-            <form method="post" id="actualizarForm" action="update_producto.php" onsubmit="return ValidarFechas(event)">
+            <form method="post" id="actualizarForm" action="update_producto.php" onsubmit="return ValidarFechas(event)" enctype="multipart/form-data">
                 <input type="hidden" name="producto" value="<?php echo $producto_seleccionado['ID']; ?>">
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre:</label>
@@ -216,6 +216,11 @@ if (isset($_SESSION['user_id'])){
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción:</label>
                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required><?php echo $producto_seleccionado['Descripcion']; ?></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="fotos" class="form-label">Foto:</label><br>
+                    <img src="data:image/jpeg;base64,<?= base64_encode($producto_seleccionado['Fotos']) ?>" alt="<?= $producto_seleccionado['Nombre'] ?>" width="100" height="150"><br><br>
+                    <input type="file" class="form-control w-50"  id="fotos" name="fotos">
                 </div>
                 <div class="mb-3">
                     <label for="precio" class="form-label">Precio:</label>

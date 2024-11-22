@@ -15,20 +15,50 @@ $error = "";
     $descuento = mysqli_real_escape_string($con, $_POST['descuento']);
     $fecha_inicial = mysqli_real_escape_string($con, $_POST['fecha_inicial']);
     $fecha_final = mysqli_real_escape_string($con, $_POST['fecha_final']);
+
+
+    if (isset($_FILES['fotos']) && $_FILES['fotos']['error'] === UPLOAD_ERR_OK && !empty($_FILES['fotos']['tmp_name'])) {
+        $foto_data = file_get_contents($_FILES['fotos']['tmp_name']);
+    } else {
+        $query = "select fotos from productos where id = $producto_id;";
+        $result = mysqli_query($con, $query);
+        $row = mysqli_fetch_assoc($result);
+        $foto_data = $row['fotos']; // No se seleccionó ninguna imagen
+    }
     
     // Actualizar información del producto
     $query_update_producto = "UPDATE productos SET 
-                                Nombre = '$nombre', 
-                                Descripcion = '$descripcion', 
-                                Precio = '$precio', 
-                                Cantidad_almacen = '$cantidad_almacen', 
-                                Desarrollador = '$desarrollador', 
-                                Origen = '$origen', 
-                                Categoria = '$categoria' 
-                              WHERE ID = '$producto_id'";
-    if (!mysqli_query($con, $query_update_producto)) {
-        $error = "Error al actualizar el producto.";
+                                Nombre = ?, 
+                                Descripcion = ?, 
+                                Fotos = ?,
+                                Precio = ?, 
+                                Cantidad_almacen = ?, 
+                                Desarrollador = ?, 
+                                Origen = ?, 
+                                Categoria = ? 
+                              WHERE ID = ?";
+
+    $stmt = mysqli_prepare($con, $query_update_producto);
+
+    // Asume que $precio y $cantidad_almacen son números. Usa "s" para cadenas y "i" para enteros o decimales según corresponda.
+    mysqli_stmt_bind_param($stmt, "sssiissii", 
+        $nombre, 
+        $descripcion, 
+        $foto_data, 
+        $precio, 
+        $cantidad_almacen, 
+        $desarrollador, 
+        $origen, 
+        $categoria, 
+        $producto_id
+    );
+
+    // Ejecuta la consulta
+    if (mysqli_stmt_execute($stmt)) {
+    } else {
+        echo "Error al actualizar el producto: " . mysqli_error($con);
     }
+
     
     // Actualizar plataformas asociadas al producto
     $query_delete_plataformas = "DELETE FROM producto_plataforma WHERE Producto = '$producto_id'";

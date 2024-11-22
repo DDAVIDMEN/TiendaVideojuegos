@@ -224,10 +224,10 @@ mysqli_close($con);
          <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header bg-primary d-flex justify-content-center">
                     <h5 class="modal-title" id="editarLabel"><strong class="text-light">Cambios Guardados</strong></h5>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <strong>Los datos se actualizaron correctamente.</strong>
                 </div>
                 </div>
