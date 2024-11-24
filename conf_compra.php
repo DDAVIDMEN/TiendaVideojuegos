@@ -236,10 +236,10 @@ mysqli_close($con);
         <div class="modal fade" id="compraExitosaModal" tabindex="-1" aria-labelledby="compraExitosaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header bg-success">
-                        <h5 class="modal-title text-light" id="compraExitosaLabel">¡Compra Exitosa!</h5>
+                    <div class="modal-header bg-success d-flex justify-content-center">
+                        <h5 class="modal-title" id="compraExitosaLabel"><strong class="text-light">¡Compra Exitosa!</strong></h5>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body text-center">
                         <strong> ¡Gracias por tu compra! Tu pedido ha sido confirmado.</strong>
                     </div>
                 </div>
