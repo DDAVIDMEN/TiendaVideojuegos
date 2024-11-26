@@ -19,6 +19,8 @@ if (isset($_SESSION['user_id'])){
     $admin = mysqli_fetch_assoc($resultadmin);
 }else{
     $admin['administrador']=0;
+    header("Location: index.php");
+    exit();
 }
 
 
@@ -94,6 +96,7 @@ if (isset($_SESSION['user_id'])){
                                 <li><a class="dropdown-item" href="nuevo_producto.php">Nuevo Producto</a></li>
                                 <li><a class="dropdown-item" href="modi_producto.php">Modificar Producto</a></li>
                                 <li><a class="dropdown-item active" href="usuarios.php">Usuarios</a></li>
+                                <li><a class="dropdown-item active" href="historialadmin.php">Historial de Compras</a></li>
                             </ul>
                         </li>
                         <?php endif; ?>
@@ -142,43 +145,50 @@ if (isset($_SESSION['user_id'])){
             <h1 class="display-1 ">D&D Games</h1>
         </div>
         <br>
-        <h2 class= "my-2">Usuarios Registrados:
-            <a  href="mod_usuarios.php">
-                <img src="editar.jpg" alt="Game Logo" style="height: 40px;" class="rounded-pill">
-            </a>
-        </h2>
-        <div class="container mb-5">
-            <table class="table table-striped" >
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Contraseña</th>
-                        <th>Nacimiento</th>
-                        <th>Tarjeta</th>
-                        <th>Dirección</th>
-                        <th>Código Postal</th>
-                        <th>Administrador</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        while ($row = mysqli_fetch_array($result)) {
-                            echo "<tr>";
-                            echo "<td>" . $row['nombre'] . "</td>";
-                            echo "<td>" . $row['correo'] . "</td>";
-                            echo "<td>" . $row['contrasena'] . "</td>";
-                            echo "<td>" . $row['nacimiento'] . "</td>";
-                            echo "<td>" . $row['tarjeta'] . "</td>";
-                            echo "<td>" . $row['direccion'] . "</td>";
-                            echo "<td>" . $row['codigo_postal'] . "</td>";
-                            echo "<td>" . $row['administrador'] . "</td>";
-                            echo "</tr>";
-                        }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+            <?php if($admin['administrador'] ==1): ?>
+            <h2 class= "my-2">Usuarios Registrados:
+                <a  href="mod_usuarios.php">
+                    <img src="editar.jpg" alt="Game Logo" style="height: 40px;" class="rounded-pill">
+                </a>
+            </h2>
+            <div class="container mb-5">
+                <table class="table table-striped" >
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Contraseña</th>
+                            <th>Nacimiento</th>
+                            <th>Tarjeta</th>
+                            <th>Dirección</th>
+                            <th>Código Postal</th>
+                            <th>Administrador</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            while ($row = mysqli_fetch_array($result)) {
+                                echo "<tr>";
+                                echo "<td>" . $row['nombre'] . "</td>";
+                                echo "<td>" . $row['correo'] . "</td>";
+                                echo "<td>" . $row['contrasena'] . "</td>";
+                                echo "<td>" . $row['nacimiento'] . "</td>";
+                                echo "<td>" . $row['tarjeta'] . "</td>";
+                                echo "<td>" . $row['direccion'] . "</td>";
+                                echo "<td>" . $row['codigo_postal'] . "</td>";
+                                echo "<td>" . $row['administrador'] . "</td>";
+                                echo "</tr>";
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-danger text-center">
+                <strong class="display-5">No eres administrador</strong><br><br><br>
+                <a href="index.php" class="alert-link text-center">Volver al catálogo</a>.
+            </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>

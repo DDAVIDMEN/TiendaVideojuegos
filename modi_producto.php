@@ -66,6 +66,8 @@ if (isset($_SESSION['user_id'])){
     $admin = mysqli_fetch_assoc($resultadmin);
 }else{
     $admin['administrador'] = 0;
+    header("Location: index.php");
+    exit();
 }
 
 ?>
@@ -184,6 +186,7 @@ if (isset($_SESSION['user_id'])){
             <h1 class="display-1">D&D Games</h1>
         </div>
         <br>
+        <?php if($admin['administrador'] ==1): ?>
         <h2 class="my-3">Modificar Producto</h2>
 
         <?php if (!empty($error)): ?>
@@ -333,6 +336,12 @@ if (isset($_SESSION['user_id'])){
             }
         </script>
 
+        <?php endif; ?>
+        <?php else: ?>
+            <div class="alert alert-danger text-center">
+                <strong class="display-5">No eres administrador</strong><br><br><br>
+                <a href="index.php" class="alert-link text-center">Volver al catálogo</a>.
+            </div>
         <?php endif; ?>
     </div>
 </body>

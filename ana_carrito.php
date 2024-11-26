@@ -85,9 +85,6 @@
     <div class="container mt-5">
     
         <?php if (isset($success) && $success): ?>
-            <!--<div class="alert alert-success text-center">
-                <strong class="display-3">Producto añadido al carrito</strong>
-            </div>-->
             <script>
                MensajeExito(); // Llamar a la función para mostrar el mensaje
             </script>
