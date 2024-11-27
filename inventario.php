@@ -143,7 +143,7 @@ if (isset($_SESSION['user_id'])){
         <br>
         <?php if($admin['administrador'] ==1): ?>
         <h2 class= "my-2">Inventario</h2>
-        <div class="container">
+        <div class="table-responsive">
         <table class="table table-striped" >
             <thead>
                 <tr>

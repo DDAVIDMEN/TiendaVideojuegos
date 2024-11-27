@@ -71,13 +71,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .btn-group .btn-check:checked + .btn {
-            background-color: #007bff; /* Cambia el color de fondo del botón seleccionado */
-            color: white; /* Cambia el color del texto del botón seleccionado */
+            background-color: #007bff; 
+            color: white; 
         }
         .btn-group .btn {
             border-radius: 5px;
             border: 1px solid #ddd;
             margin-right: 5px;
+        }
+        .custom-img {
+            width: 520px; 
+            height: 650px; 
+            
         }
     </style>
 </head>
@@ -190,7 +195,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
-                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="520" height="650">
+                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" class="custom-img img-fluid" >
                 </div>
                 <div class="col-md-6">
                     <p><strong>Descripción:</strong> <?php echo htmlspecialchars($game['descripcion']); ?></p>

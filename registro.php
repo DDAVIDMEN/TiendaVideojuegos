@@ -141,7 +141,7 @@ mysqli_close($con);
                 <ul class="navbar-nav">
                     <?php if (!isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
-                        <a href="registro.php active" class="nav-link me-3">Crear cuenta</a>
+                        <a href="registro.php" class="nav-link me-3 active">Crear cuenta</a>
                     </li>
                     <li class="nav-item">
                         <a href="login.php" class="nav-link">Iniciar sesión</a>

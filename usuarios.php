@@ -147,7 +147,7 @@ if (isset($_SESSION['user_id'])){
                     <img src="editar.jpg" alt="Game Logo" style="height: 40px;" class="rounded-pill">
                 </a>
             </h2>
-            <div class="container mb-5">
+            <div class="table-responsive mb-5">
                 <table class="table table-striped" >
                     <thead>
                         <tr>

@@ -36,6 +36,13 @@ mysqli_close($con);
     <title>Reseña</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .custom-img {
+            width: 520px; 
+            height: 650px; 
+            
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -146,7 +153,7 @@ mysqli_close($con);
             <div class="row">
                 <div class="col-md-6">
                     <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
-                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" width="520" height="650">
+                        alt="<?php echo htmlspecialchars($game['nombre']); ?>" class="custom-img img-fluid">
                 </div>
                 <div class="col-md-6">
                     <form action="nueva_resena.php" method="POST" id="resenaForm">

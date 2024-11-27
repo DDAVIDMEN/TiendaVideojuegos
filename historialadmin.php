@@ -145,7 +145,7 @@ if (isset($_SESSION['user_id'])){
         <br>
         <?php if($admin['administrador'] ==1): ?>
         <h2 class= "my-2">Historial de Compras:</h2>
-        <div class="container mb-5">
+        <div class="table-responsive mb-5">
             <table class="table table-striped" >
                 <thead>
                     <tr>
