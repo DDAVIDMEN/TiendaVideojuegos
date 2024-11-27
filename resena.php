@@ -150,7 +150,7 @@ mysqli_close($con);
             </div>
         <?php else: ?>
             <h1 class="my-4"><?php echo htmlspecialchars($game['nombre']); ?></h1>
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-6">
                     <img src="data:image/jpeg;base64,<?php echo base64_encode($game['fotos']); ?>" 
                         alt="<?php echo htmlspecialchars($game['nombre']); ?>" class="custom-img img-fluid">
