@@ -1,5 +1,19 @@
 <?php
     include("conexion.php");
+
+    //Admin 
+    if (isset($_SESSION['user_id'])){
+        $admin_id = $_SESSION['user_id'];
+        $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
+        $resultadmin = mysqli_query($con, $queryadmin);
+        $admin = mysqli_fetch_assoc($resultadmin);
+    }else{
+        $admin['administrador']=0;
+        header("Location: index.php");
+        exit();
+    }
+
+
     $user_id = $_SESSION['user_id'];
     $producto_id = $_POST['producto_id'];
     $plataforma = $_POST['plataforma'];
@@ -45,15 +59,7 @@
     }
 
     
-    //Admin 
-if (isset($_SESSION['user_id'])){
-    $admin_id = $_SESSION['user_id'];
-    $queryadmin = "SELECT administrador from usuarios where id = $admin_id";
-    $resultadmin = mysqli_query($con, $queryadmin);
-    $admin = mysqli_fetch_assoc($resultadmin);
-}else{
-    $admin['administrador']=0;
-}
+
 
 
     mysqli_close($con);
