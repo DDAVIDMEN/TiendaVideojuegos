@@ -1,35 +1,6 @@
 <?php
 include("conexion.php");
 
-// Obtener el nombre de la búsqueda desde la URL
-$nombre = $_GET['nombre'] ?? '';
-
-// Validar si el nombre no está vacío
-if (!empty($nombre)) {
-    // Query para buscar el producto
-    $query = "SELECT id FROM productos WHERE nombre = '$nombre';";
-    $result = mysqli_query($con, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        // Obtener el primer resultado
-        $row = mysqli_fetch_assoc($result);
-        $id = $row['id'];
-
-        // Liberar el resultado y cerrar la conexión
-        mysqli_free_result($result);
-        mysqli_close($con);
-
-        // Redirigir a detalles.php con el ID del producto
-        header("Location: detalles.php?id=$id");
-        exit();
-    } else {
-        // Si no se encuentra nada, mostrar un mensaje
-        $mensaje = "No se encontró ningún producto con ese nombre.";
-    }
-} else {
-    $mensaje = "No se proporcionó ningún nombre para buscar.";
-}
-
 //Admin 
 if (isset($_SESSION['user_id'])){
     $admin_id = $_SESSION['user_id'];
@@ -39,6 +10,27 @@ if (isset($_SESSION['user_id'])){
 }else{
     $admin['administrador'] = 0;
 }
+
+
+$nombre = $_GET['nombre'];
+    
+
+//Query
+$query = "select id, fotos, nombre from productos where nombre LIKE '%$nombre%';";
+if (mysqli_connect_errno()) {
+    echo mysqli_connect_error();
+}
+
+$result = mysqli_query($con, $query);
+$buscar = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $buscar[] = $row;
+}
+mysqli_free_result($result);
+mysqli_close($con);
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -154,12 +146,30 @@ if (isset($_SESSION['user_id'])){
             <h1 class="display-1">D&D Games</h1>
         </div>
         <br>
-        <h2 class="text-center mb-3">Búsqueda:</h2>
-        <div class="alert alert-danger text-center mt-2">
-            <?php echo htmlspecialchars($mensaje); ?>
+        <h2 class="my-2">Búsqueda:</h2>
+        <br>
+        <div class="container">
+            <div class="row">
+                <?php
+                if ($nombre =="") {
+                    echo "<div class='alert alert-danger text-center'><strong>No se proporcionó ningún nombre para buscar.</strong></div>";
+                }elseif (empty($buscar)) {
+                    echo "<div class='alert alert-danger text-center'><strong>No se encontró ningún producto con ese nombre.</strong></div>";
+                } else {          
+                    foreach ($buscar as $bus):
+                        echo '<div class="col-md text-center mb-4">';
+                        echo '<a href="detalles.php?id=' . $bus['id'] . '" class="text-decoration-none">';
+                        echo '<img src="data:image/jpeg;base64,' . base64_encode($bus['fotos']) . '" alt="' . $bus['nombre'] . '" width="200" height="300">';
+                        echo '<h5 class="text-body">' . htmlspecialchars($bus['nombre']) . '</h5>';
+                        echo '</a>';
+                        echo '</div>';
+                    endforeach;
+                }
+                ?>
+            </div>
         </div>
         <div class="text-center">
-            <a href="index.php" class="btn btn-primary mt-4">Volver al catálogo</a>
+            <a href="index.php" class="btn btn-primary my-4">Volver al catálogo</a>
         </div>
     
 </body>
